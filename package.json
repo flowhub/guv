@@ -1,0 +1,40 @@
+{
+  "name": "guv",
+  "description": "Grid Utilization Virgilante",
+  "version": "0.0.1",
+  "author": {
+    "name": "Jon Nordby",
+    "email": "jononor@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonnor/gov.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jonnor/gov/blob/master/LICENSE-MIT"
+    }
+  ],
+  "dependencies": {
+    "async": "^0.9.0",
+    "coffee-script": "^1.8.0",
+    "commander": "^2.6.0",
+    "debug": "^2.1.2",
+    "uuid": "^2.0.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-coffeelint": "~0.0.6",
+    "grunt-mocha-test": "^0.12.2",
+    "chai": "~1.9.0",
+    "mocha": "~1.21.0"
+  },
+  "keywords": [],
+  "bin": {
+    "guv": "./bin/guv",
+  },
+  "scripts": {
+    "test": "grunt test"
+  }
+}
