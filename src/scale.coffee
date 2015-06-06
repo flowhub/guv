@@ -39,14 +39,4 @@ jobsInDeadline = (config) ->
   return config.target / config.process_time
 
 
-main = () ->
-  config =
-    process_time: 1000
-    qos_deadline: 4000
-  config = defaults config
-
-  config.target = calculateTarget(config)
-  console.log 'target', config.target
-  console.log 'jobs within deadline', jobsInDeadline(config)
-
-main()
+exports.defaults = defaults
