@@ -4,13 +4,14 @@ debug = require('debug')('guv:rabbitmq')
 
 exports.getStats = (config, callback) ->
   options =
-    username: config.amqp_user
+    username: config.amqp_username
     password: config.amqp_password
     hostname: config.amqp_host # includes port
     protocol: "https"
+  debug 'options', options
   amqp = new AMQPStats options
   amqp.queues (err, res, queues) ->
-    debug 'got', err, queues
+    debug 'got queue info', err, queues.length
     return callback err if err
     details = {}
     stats = {}
