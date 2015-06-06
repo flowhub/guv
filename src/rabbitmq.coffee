@@ -11,7 +11,7 @@ exports.getStats = (config, callback) ->
   debug 'options', options
   amqp = new AMQPStats options
   amqp.queues (err, res, queues) ->
-    debug 'got queue info', err, queues.length
+    debug 'got queue info', err, queues?.length
     return callback err if err
     details = {}
     stats = {}

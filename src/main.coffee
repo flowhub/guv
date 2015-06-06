@@ -10,7 +10,6 @@ checkAndScale = (cfg, role, callback) ->
   rabbitmq.getStats cfg, (err, queues) ->
     role.current_jobs = null
     return callback err if err
-    console.log err, queues
 
     role.current_jobs = queues[role.amqp_queue]
     return callback new Error "Could not get data for queue: #{role.amqp_queue}" if not role.current_jobs?
@@ -32,11 +31,13 @@ class Governor
 
     @interval = null
 
+  # TODO: emit events on error, iteration
   start: () ->
     runFunc = () =>
+      @runOnce (err, state) =>
+        debug 'ran iteration', err, state
 
-    seconds = 60*1000 
-    interval = runInterval runFunc, 30*seconds
+    interval = setInterval runFunc, 30*1000
     runFunc() # do first iteration right now
 
   stop: () ->
@@ -46,8 +47,8 @@ class Governor
 
     # FIXME: unhardcode, add support for multiple processes/queues
     role =
-      id: 'processing'
-      amqp_queue: 'worker.JOB'
+      id: 'imgflo_worker'
+      amqp_queue: 'imgflo_worker.JOB'
       heroku_dyno: 'processing'
       current_workers: null
       current_jobs: null
@@ -58,12 +59,16 @@ exports.main = () ->
   cfg =
     process_time: 1000
     qos_deadline: 10000
-    worker_maximum: 1
+    worker_maximum: 4
     heroku_app: 'imgflo'
 
   heroku.dryrun = true
   guv = new Governor cfg
+
+  guv.start()
+
+###
   guv.runOnce (err, state) ->
     throw err if err
-    console.log state
-
+    debug 'run once', state
+###

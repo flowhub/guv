@@ -5,8 +5,6 @@ url = require 'url'
 # TODO: move config handling to separate file
 calculateTarget = (config) ->
 
-  console.log config
-
   # Calculate the point which the process completes
   # the desired percentage of jobs within
   tolerance = (100-config.qos_percent)/100
