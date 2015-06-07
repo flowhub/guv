@@ -1,3 +1,4 @@
 module.exports = {
-  main: require('./src/main')
+  main: require('./src/main'),
+  config: require('./src/config')
 };

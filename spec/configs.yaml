@@ -1,0 +1,57 @@
+# Testcases for config parsing
+-
+  name: 'empty string'
+  input: ""
+  result: {}
+-
+  name: 'multiline, separated by newlines'
+  input: |
+    *{boot=30}
+    myworker{t=1000,worker=workerdyno}
+    worker2{q=myqueue}
+  result:
+   "*":
+    boot: "30"
+   myworker:
+    t: "1000"
+    worker: "workerdyno"
+   worker2:
+    q: "myqueue"
+-
+  name: 'leading and trailing whitespace'
+  input: " b{boot=30}; "
+  result:
+    b:
+      boot: "30"
+-
+  name: 'one line, separated by ;'
+  input: "*{boot=30}; myworker{t=1000,worker=workerdyno};worker2{q=myqueue}"
+  result:
+   "*":
+    boot: "30"
+   myworker:
+    t: "1000"
+    worker: "workerdyno"
+   worker2:
+    q: "myqueue"
+-
+  name: 'missing role name'
+  input: " {boot=30};"
+  error:
+    line: 1
+    column: 2
+    mention: role
+-
+  name: 'missing variable value'
+  input: "g{boot=};"
+  error:
+    line: 1
+    column: 8
+    mention: value
+-
+  name: 'missing variable name'
+  input: "g{=ff};"
+  error:
+    line: 1
+    column: 3
+    mention: variable

@@ -1,14 +1,22 @@
 start
   = roles
 
-whitespace
+// Common definitions
+whitespace "whitespace"
   = [\n\t ]
 
 notspecial
-  = [a-zA-Z*0-9_-]
+  = [a-zA-Z*0-9_\-.]
+
+// Variables
+varvalue "value"
+  = notspecial+
+
+varname "variable"
+  = notspecial+
 
 var
-  = name: notspecial+ "=" value: notspecial+
+  = name: varname "=" value: varvalue
   { return [name.join(''), value.join('')] }
 
 // handle optional delimeter and whitespace
@@ -20,8 +28,13 @@ vargroup
   = whitespace* "{" vars: nvar* "}"
   { var ret = {}; vars.forEach(function(i) { ret[i[0]] = i[1] } ); return ret;  }
 
+
+// Roles
+roleid "role name"
+  = notspecial+
+
 role
-  = name: notspecial+ vars: vargroup
+  = whitespace* name: roleid vars: vargroup
   { return [name.join(''), vars] }
 
 // handle optional delimeter and whitespace
@@ -30,5 +43,5 @@ nrole
   { return role;  }
 
 roles
-  = roles: nrole+
+  = roles: nrole*
   { var ret = {}; roles.forEach(function(i) { ret[i[0]] = i[1] } ); return ret; }

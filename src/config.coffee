@@ -1,8 +1,11 @@
 
 gaussian = require 'gaussian'
 url = require 'url'
+peg = require 'pegjs'
+fs = require 'fs'
+path = require 'path'
+parser = peg.buildParser fs.readFileSync (path.join __dirname, '..', 'config.peg') ,'utf-8'
 
-# TODO: move config handling to separate file
 calculateTarget = (config) ->
 
   # Calculate the point which the process completes
@@ -54,5 +57,16 @@ defaults = (c) ->
 jobsInDeadline = (config) ->
   return config.target / config.process_time
 
+  
+parse = (str) ->
+  try
+    return parser.parse str
+  catch e
+    if e.name == 'SyntaxError'
+      # Enrich message with where it occurred
+      orig = e.message.replace('SyntaxError: ', '')
+      e.message = "SyntaxError: line #{e.line},column #{e.column} #{orig}"
+    throw e
 
+exports.parse = parse
 exports.defaults = defaults
