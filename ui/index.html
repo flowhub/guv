@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>guv UI</title>
+
+    <script src="/browser/guv.js"></script>
+    <script src="./main.coffee" type="text/coffeescript"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.js" charset="utf-8"></script>
+    <script src="https://fb.me/react-0.13.2.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.css">
+    <link rel="stylesheet" href="./main.css">
+  </head>
+
+  <body>
+    <style>
+    #chart svg {
+      height: 400px;
+      width: 100%;
+    }
+    </style>
+
+    <div id="chart">
+      <svg></svg>
+    </div>
+
+    <fieldset>
+      <label for="base">Base rate</label>
+      <input name="base" id='base' type="number" value="100"> </input>
+      <label for="base">Daily flutuation</label>
+      <input id='daily' type="number" value="10" > </input>
+      <label for="base">Weekly flutuation</label>
+      <input id='weekly' type="number" value="30"> </input>
+    </fieldset>
+
+  </body>
+</html>
