@@ -5,11 +5,19 @@ process = require 'child_process'
 
 exports.dryrun = false
 
-exports.setWorkers = (config, role, number, callback) ->
+workerArgs = (workers) ->
+  args = []
+  for name, number in workers
+    args.push "#{role}=#{number}"
+  return args
 
-  app = config.heroku_app
+exports.setWorkers = (config, workers, callback) ->
+
+  app = config.app
   prog = 'heroku'
-  args = ['ps:scale', "#{role}=#{number}", "--app", app]
+  args = ['ps:scale']
+  args = args.concat workerArgs(workers)
+  args = args.concat [ "--app", app]
 
   cmd = prog + ' ' + args.join ' '
   debug 'running', cmd
