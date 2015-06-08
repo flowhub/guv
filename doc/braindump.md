@@ -18,6 +18,14 @@ Non-requirements
 - Scaling non-compute resources (databases etc)
 
 
+Best practices
+
+- Minimize worker boot time. More effective auto-scaling and robustness against spikes
+- Measure the statistics of your job processing time. Get mean and variance as right as you can
+- Put jobs with different processing times into reparate worker roles. GUV assumes normal distribution with single mean
+- Monitor actual job processing time end-to-end, compare with deadline. Flag instances where failing to meet QoS
+
+
 Settings
 
 Should be able to have per-app defaults for each setting,
