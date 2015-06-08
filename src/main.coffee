@@ -23,6 +23,8 @@ exports.main = () ->
   cfg = config.parse options.config
   guv = new governor.Governor cfg
 
+  console.log 'Using configuration:\n', options.config
+
   if options.oneshot
     guv.runOnce (err, state) ->
       throw err if err
