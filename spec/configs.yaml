@@ -1,4 +1,6 @@
 # Testcases for config parsing
+
+# simple happy
 -
   name: 'empty string'
   input: ""
@@ -7,33 +9,34 @@
   name: 'multiline, separated by newlines'
   input: |
     *{boot=30}
-    myworker{t=1000,worker=workerdyno}
+    myworker{t=10.00,worker=workerdyno}
     worker2{q=myqueue}
-  result:
+  parsed:
    "*":
     boot: "30"
    myworker:
-    t: "1000"
+    t: "10.00"
     worker: "workerdyno"
    worker2:
     q: "myqueue"
 -
   name: 'leading and trailing whitespace'
   input: " b{boot=30}; "
-  result:
+  parsed:
     b:
       boot: "30"
 -
   name: 'one line, separated by ;'
-  input: "*{boot=30}; myworker{t=1000,worker=workerdyno};worker2{q=myqueue}"
-  result:
+  input: "*{boot=30}; myworker{t=1,worker=workerdyno};worker2{q=myqueue}"
+  parsed:
    "*":
     boot: "30"
    myworker:
-    t: "1000"
+    t: "1"
     worker: "workerdyno"
    worker2:
     q: "myqueue"
+# error cases
 -
   name: 'missing role name'
   input: " {boot=30};"
@@ -55,3 +58,45 @@
     line: 1
     column: 3
     mention: variable
+# typical real systems
+-
+  name: 'imgflo'
+  input: |
+    *{boot=20,app=imgflo,min=2,max=10}
+    processing{d=6.0,p=1.000,queue=imgflo_worker.IN}
+  config:
+   "*":
+    boot: 20.0
+   processing:
+    deadline: 6.0
+    processing: 1.0
+    worker: processing
+    queue: imgflo_worker.IN
+-
+  name: 'grid-apis'
+  input: |
+    *{boot=40,app=the-grid-apis}
+    solve{d=30.0,p=5.0}
+    gssmeasure{deadline=30.0,p=5.0}
+    measure{d=60.0,processing=15.0}
+    share{}
+  config:
+    '*':
+      boot: 40.0
+      app: the-grid-apis
+    solve:
+      deadline: 30.0
+      processing: 5.0
+      worker: 'solve'
+    gssmeasure:
+      deadline: 30.0
+      processing: 5.0
+      queue: 'gssmeasure'
+    measure:
+      deadline: 60.0
+      processing: 15.0
+    share:
+      deadline: 60.0
+      processing: 10.0
+      worker: 'share'
+      queue: 'share'

@@ -1,13 +1,20 @@
 
 AMQPStats = require 'amqp-stats'
 debug = require('debug')('guv:rabbitmq')
+url = require 'url'
+
+amqpOptions = (str) ->
+  u = url.parse str
+  [ user, password ] = u.auth.split ':'
+  o.host = u.host
+  o.username = user
+  o.password = password
+  o.protocol = 'https'
+  return o
 
 exports.getStats = (config, callback) ->
-  options =
-    username: config.amqp_username
-    password: config.amqp_password
-    hostname: config.amqp_host # includes port
-    protocol: "https"
+
+  options = amqpOptions config.broker
   debug 'options', options
   amqp = new AMQPStats options
   amqp.queues (err, res, queues) ->
