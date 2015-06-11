@@ -10,7 +10,7 @@ checkAndScale = (cfg, callback) ->
   rabbitmq.getStats cfg['*'], (err, queues) ->
     return callback err if err
 
-    workers = {}
+    workers = []
     for name, role of cfg
       continue if name == '*'
       state[name] = s = {}
@@ -18,7 +18,10 @@ checkAndScale = (cfg, callback) ->
       return callback new Error "Could not get data for queue: #{role.queue}" if not s.current_jobs?
 
       s.new_workers = scale.scale role, s.current_jobs
-      workers[role.worker] = s.new_workers
+      workers.push
+        app: role.app
+        role: role.worker
+        quantity: s.new_workers
 
     heroku.setWorkers cfg['*'], workers, (err) ->
       return callback err, state if err
