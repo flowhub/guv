@@ -4,13 +4,34 @@
 -
   name: 'empty string'
   input: ""
-  result: {}
+  parsed: {}
+-
+  name: 'only comments'
+  input: "# my comment"
+  parsed: {}
 -
   name: 'multiline, separated by newlines'
   input: |
     *{boot=30}
     myworker{t=10.00,worker=workerdyno}
     worker2{q=myqueue}
+  parsed:
+   "*":
+    boot: "30"
+   myworker:
+    t: "10.00"
+    worker: "workerdyno"
+   worker2:
+    q: "myqueue"
+-
+  name: 'multiline, with comments'
+  input: |
+    # header
+    *{boot=30}
+    myworker{t=10.00,worker=workerdyno}
+    # second
+    worker2{q=myqueue}
+    # trailing
   parsed:
    "*":
     boot: "30"
@@ -100,3 +121,4 @@
       processing: 10.0
       worker: 'share'
       queue: 'share'
+

@@ -5,8 +5,21 @@ start
 whitespace "whitespace"
   = [\n\t ]
 
+_ "spaces"
+  = (" "*)?
+
 notspecial
   = [a-zA-Z*0-9_\-.]
+
+newline "newline"
+  = [\n\r\u2028\u2029]
+
+anychar "not newline"
+  = [^\n\r\u2028\u2029]
+
+// Comments
+comment "comment"
+  = newline* "#" anychar* newline* { return null; }
 
 // Variables
 varvalue "value"
@@ -43,5 +56,5 @@ nrole
   { return role;  }
 
 roles
-  = roles: nrole*
-  { var ret = {}; roles.forEach(function(i) { ret[i[0]] = i[1] } ); return ret; }
+  = roles: (nrole / comment)*
+  { var ret = {}; roles.forEach(function(i) {  if(i!=null) ret[i[0]] = i[1] } ); return ret; }
