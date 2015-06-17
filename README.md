@@ -7,6 +7,8 @@ It automatically scales the numbers of workers based on number of pending jobs i
 The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*.
 This is based on estimates of the processing time (mean, variance).
 
+guv is written in Node.js, but can be used with workers in any programming language.
+
 [Origin of the word guv](http://english.stackexchange.com/questions/14370/what-is-the-origin-of-the-british-guv-is-it-still-used-colloquially).
 
 ## Status
@@ -18,6 +20,37 @@ This is based on estimates of the processing time (mean, variance).
 * Scaling algorithm does not compensate for worker boot time
 * Used in production at [The Grid](https://thegrid.io), with [MsgFlo](https://github.com/msgflo/msgflo)
 * ! Missing tests
+
+## Usage
+
+Install as NPM dependency
+
+    npm install --save guv
+    
+Add it to your Procfile
+
+    echo "guv: node node_modules/.bin/guv" >> Procfile
+
+Configure an Heroku API key to use. Get it 
+
+    heroku config:set HEROKU_API_KEY=`heroku auth:token`
+
+Configure RabbitMQ instance to use. It must have the management plugin installed and configured.
+
+    heroku config:set GUV_BROKER=amqp://[user:pass]@example.net/instance
+
+Note: If you use CloudAMQP, guv will automatically respect the `CLOUDAMQP_URL` envvar. No config needed.
+
+For guv own configuration we also recommend using an envvar.
+This allows you to change the configuration without redeploying.
+See below for details on the configuration format.
+
+    heroku config:set GUV_CONFIG="`cat autoscale.guv`"
+
+To verify that guv is running and working, check its log.
+
+    heroku logs --app myapp --ps guv
+
 
 ## Configuration
 
@@ -31,8 +64,8 @@ Each role has an associated queue, worker and scaling configuration - specified 
 The special role name `*` is used for global, application-wide settings.
 Each of the individual roles will inherit this configuration if they do not override it.
 
-    # default to using a minimum of 5 workers, maximum of 50
-    *{min=5,max=50}
+    # Heroku app is my-heroku-app, defaults to using a minimum of 5 workers, maximum of 50
+    *{min=5,max=50,app=my-heroku-app}
     # uses only defaults
     imageprocessing{}
     # except for text processing
@@ -55,6 +88,9 @@ The name of the `worker` and `queue` defaults to the `role name`, but can be ove
     colorextract{}
     # explicitly specifying
     histogram{queue=hist.INPUT, worker=processhistograms}
+
+For list of all supported configuration variables see [./src/config.coffee](./src/config.coffee).
+Many of the commonly used ones have short and long-form names.
 
 You can put multiple role definitions on single line by delimiting with `;`
 
