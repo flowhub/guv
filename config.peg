@@ -1,3 +1,6 @@
+// This is a PEG.js grammar http://pegjs.org/
+// Used for the config format of guv
+
 start
   = roles
 
