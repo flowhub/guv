@@ -1,0 +1,15 @@
+-
+  name: 'no messages'
+  expected: 'should go to minimum'
+  result: 3
+  config: '*{min=3}'
+  state:
+    messages: 0
+-
+  name: 'huge number of messages'
+  expect: 'should go to maximum'
+  result: 40
+  config: '*{max=40}'
+  state:
+    messages: 10000
+

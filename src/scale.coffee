@@ -14,7 +14,7 @@ bound = (v, lower, upper) -> return min(max(v, lower), upper)
 
 scale = (config, queueLength) ->
   estimate = proportional config, queueLength
-  debug 'estimate', estimate
+  debug 'estimate for', queueLength, estimate
   workers = Math.ceil(estimate)
   # TODO: estimate higher than max should be a warning
   # TODO: add code for estimating how long it will take to catch up (given feed rate estimates)
