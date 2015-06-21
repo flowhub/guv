@@ -10,14 +10,28 @@ exports.enable = false
 clone = (obj) ->
   return JSON.parse JSON.stringify obj
 
-class Heroku
-  constructor: () ->
+class NoMock
+  done: () ->
+    # no-op
 
-exports.Heroku = Heroku
+
+exports.Heroku =
+  expectWorkers: (app, workers) ->
+    return new NoMock if not exports.enable
+
+    # FIXME: only supports one
+    process = Object.keys(workers)[0]
+    dynos = workers[process]
+
+    scope = require('nock')('https://api.heroku.com')
+      .post("/apps/#{app}/ps/scale", (b) -> return b.type == process and b.qty == dynos.toString() )
+      .reply(200)
+
+    return scope
 
 exports.RabbitMQ =
   setQueues: (overrides={}) ->
-    return if not exports.enable
+    return new NoMock if not exports.enable
 
     r = clone recorded[0]
     for queue in r.response

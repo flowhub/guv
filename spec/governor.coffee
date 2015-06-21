@@ -53,8 +53,9 @@ describe 'Governor', ->
       it 'should scale to minimum', (done) ->
         mocks.RabbitMQ.setQueues
           'myrole.IN':
-            'messages_ready': 0
             'messages': 0
+        setWorkers = mocks.Heroku.expectWorkers 'guv-test',
+          'web': cfg.my.minimum
 
         governor.once 'error', (err) ->
           chai.expect(err).to.not.exist
@@ -63,6 +64,7 @@ describe 'Governor', ->
           chai.expect(state).to.include.keys 'my'
           chai.expect(state.my.current_jobs).to.equal 0
           chai.expect(state.my.new_workers).to.equal cfg.my.minimum
+          setWorkers.done()
           done()
         governor.start()
 
@@ -70,8 +72,9 @@ describe 'Governor', ->
       it 'should scale to maximum', (done) ->
         mocks.RabbitMQ.setQueues
           'myrole.IN':
-            'messages_ready': 1000
             'messages': 1000
+        setWorkers = mocks.Heroku.expectWorkers 'guv-test',
+          'web': cfg.my.maximum
 
         governor.once 'error', (err) ->
           chai.expect(err).to.not.exist
@@ -80,6 +83,7 @@ describe 'Governor', ->
           chai.expect(state).to.include.keys 'my'
           chai.expect(state.my.current_jobs).to.equal 1000
           chai.expect(state.my.new_workers).to.equal cfg.my.maximum
+          setWorkers.done()
           done()
         governor.start()
 
