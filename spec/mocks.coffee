@@ -19,12 +19,12 @@ exports.Heroku =
   expectWorkers: (app, workers) ->
     return new NoMock if not exports.enable
 
-    # FIXME: only supports one
-    process = Object.keys(workers)[0]
-    dynos = workers[process]
+    formation = []
+    for name, qty of workers
+      formation.push { process: name, quantity: qty }
 
     scope = require('nock')('https://api.heroku.com')
-      .post("/apps/#{app}/ps/scale", (b) -> return b.type == process and b.qty == dynos.toString() )
+      .patch("/apps/#{app}/formation", updates: formation)
       .reply(200)
 
     return scope
