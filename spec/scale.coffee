@@ -10,7 +10,8 @@ scaleTest = (test) ->
 
     it test.expect, () ->
       cfg = guv.config.parse test.config
-      actual = guv.scale.scale cfg['*'], test.state.messages
+      role = (test.role or '*')
+      actual = guv.scale.scale cfg[role], test.state.messages
       chai.expect(actual).to.equal test.result
 
 

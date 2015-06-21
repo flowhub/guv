@@ -89,14 +89,13 @@ addDefaults = (format, role, c) ->
     c[name] = option.default if not c[name]?
 
   # TODO: make these functions with a toString, declared in varList?
-  c.stddev = c.processing*0.5 if not c.stddev
-  c.target = calculateTarget c if not c.target
-
   c.broker = process.env['GUV_BROKER'] if not c.broker
   c.broker = process.env['CLOUDAMQP_URL'] if not c.broker
   if role != '*'
     c.worker = role if not c.worker
     c.queue = role if not c.queue
+    c.stddev = c.processing*0.5 if not c.stddev
+    c.target = calculateTarget c if not c.target
 
   return c
 
