@@ -1,0 +1,490 @@
+[
+  {
+    "scope": "https://owl.rmq.cloudamqp.com:443",
+    "method": "GET",
+    "path": "/api/queues/",
+    "body": "",
+    "status": 200,
+    "response": [
+      {
+        "memory": 22080,
+        "message_stats": {
+          "publish": 2,
+          "publish_details": {
+            "rate": 0
+          }
+        },
+        "messages": 2,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 2,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 0,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "state": "running",
+        "messages_ram": 2,
+        "messages_ready_ram": 2,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 834,
+        "message_bytes_ready": 834,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 834,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 2,
+          "len": 2,
+          "target_ram_count": "infinity",
+          "next_seq_id": 2,
+          "avg_ingress_rate": 5.5722213399657285e-65,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 1
+        },
+        "name": "fbp",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {},
+        "node": "rabbit@owl-01"
+      },
+      {
+        "memory": 22184,
+        "messages": 0,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 0,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 1,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "state": "running",
+        "messages_ram": 0,
+        "messages_ready_ram": 0,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 0,
+        "message_bytes_ready": 0,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 0,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 0,
+          "len": 0,
+          "target_ram_count": "infinity",
+          "next_seq_id": 0,
+          "avg_ingress_rate": 0,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 0
+        },
+        "name": "myrole.DRAIN",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {
+          "x-dead-letter-exchange": "dead-myrole.DRAIN"
+        },
+        "node": "rabbit@owl-01"
+      },
+      {
+        "memory": 22104,
+        "messages": 0,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 0,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 1,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "state": "running",
+        "messages_ram": 0,
+        "messages_ready_ram": 0,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 0,
+        "message_bytes_ready": 0,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 0,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 0,
+          "len": 0,
+          "target_ram_count": "infinity",
+          "next_seq_id": 0,
+          "avg_ingress_rate": 0,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 0
+        },
+        "name": "myrole.IN",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {
+          "x-dead-letter-exchange": "dead-myrole.IN"
+        },
+        "node": "rabbit@owl-02"
+      }
+    ],
+    "headers": {
+      "server": "nginx/1.8.0",
+      "date": "Sun, 21 Jun 2015 04:11:58 GMT",
+      "content-type": "application/json",
+      "content-length": "3589",
+      "connection": "close",
+      "cache-control": "no-cache",
+      "x-content-type-options": "nosniff",
+      "x-xss-protection": "1; mode=block",
+      "x-frame-options": "SAMEORIGIN",
+      "strict-transport-security": "max-age=631138519"
+    }
+  },
+  {
+    "scope": "https://owl.rmq.cloudamqp.com:443",
+    "method": "GET",
+    "path": "/api/queues/",
+    "body": "",
+    "status": 200,
+    "response": [
+      {
+        "memory": 22080,
+        "message_stats": {
+          "publish": 2,
+          "publish_details": {
+            "rate": 0
+          }
+        },
+        "messages": 2,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 2,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 0,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "state": "running",
+        "messages_ram": 2,
+        "messages_ready_ram": 2,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 834,
+        "message_bytes_ready": 834,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 834,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 2,
+          "len": 2,
+          "target_ram_count": "infinity",
+          "next_seq_id": 2,
+          "avg_ingress_rate": 5.5722213399657285e-65,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 1
+        },
+        "name": "fbp",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {},
+        "node": "rabbit@owl-01"
+      },
+      {
+        "memory": 22184,
+        "messages": 0,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 0,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 1,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-02"
+        ],
+        "state": "running",
+        "messages_ram": 0,
+        "messages_ready_ram": 0,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 0,
+        "message_bytes_ready": 0,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 0,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 0,
+          "len": 0,
+          "target_ram_count": "infinity",
+          "next_seq_id": 0,
+          "avg_ingress_rate": 0,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 0
+        },
+        "name": "myrole.DRAIN",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {
+          "x-dead-letter-exchange": "dead-myrole.DRAIN"
+        },
+        "node": "rabbit@owl-01"
+      },
+      {
+        "memory": 22104,
+        "messages": 0,
+        "messages_details": {
+          "rate": 0
+        },
+        "messages_ready": 0,
+        "messages_ready_details": {
+          "rate": 0
+        },
+        "messages_unacknowledged": 0,
+        "messages_unacknowledged_details": {
+          "rate": 0
+        },
+        "idle_since": "2015-06-21 3:55:46",
+        "consumer_utilisation": "",
+        "policy": "HA",
+        "exclusive_consumer_tag": "",
+        "consumers": 1,
+        "slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "synchronised_slave_nodes": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "recoverable_slaves": [
+          "rabbit@owl-03",
+          "rabbit@owl-01"
+        ],
+        "state": "running",
+        "messages_ram": 0,
+        "messages_ready_ram": 0,
+        "messages_unacknowledged_ram": 0,
+        "messages_persistent": 0,
+        "message_bytes": 0,
+        "message_bytes_ready": 0,
+        "message_bytes_unacknowledged": 0,
+        "message_bytes_ram": 0,
+        "message_bytes_persistent": 0,
+        "disk_reads": 0,
+        "disk_writes": 0,
+        "backing_queue_status": {
+          "q1": 0,
+          "q2": 0,
+          "delta": [
+            "delta",
+            "undefined",
+            0,
+            "undefined"
+          ],
+          "q3": 0,
+          "q4": 0,
+          "len": 0,
+          "target_ram_count": "infinity",
+          "next_seq_id": 0,
+          "avg_ingress_rate": 0,
+          "avg_egress_rate": 0,
+          "avg_ack_ingress_rate": 0,
+          "avg_ack_egress_rate": 0,
+          "mirror_seen": 0,
+          "mirror_senders": 0
+        },
+        "name": "myrole.IN",
+        "vhost": "xkzeeurw",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {
+          "x-dead-letter-exchange": "dead-myrole.IN"
+        },
+        "node": "rabbit@owl-02"
+      }
+    ],
+    "headers": {
+      "server": "nginx/1.8.0",
+      "date": "Sun, 21 Jun 2015 04:11:58 GMT",
+      "content-type": "application/json",
+      "content-length": "3589",
+      "connection": "close",
+      "cache-control": "no-cache",
+      "x-content-type-options": "nosniff",
+      "x-xss-protection": "1; mode=block",
+      "x-frame-options": "SAMEORIGIN",
+      "strict-transport-security": "max-age=631138519"
+    }
+  }
+]
