@@ -1,7 +1,7 @@
 {
   "name": "guv",
   "description": "Grid Utilization Virgilante",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": {
     "name": "Jon Nordby",
     "email": "jononor@gmail.com"
@@ -38,7 +38,8 @@
   },
   "keywords": [],
   "bin": {
-    "guv": "./bin/guv"
+    "guv": "./bin/guv",
+    "guv-validate": "./bin/guv-validate"
   },
   "scripts": {
     "test": "grunt test"
