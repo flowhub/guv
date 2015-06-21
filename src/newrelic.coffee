@@ -19,6 +19,7 @@ onStateChanged = (state) ->
       app: data.app
       jobs: data.current_jobs
       workers: data.new_workers
+      role: role
     debug 'recording event', 'GuvScaled'
     nr.recordCustomEvent 'GuvScaled', event
 
