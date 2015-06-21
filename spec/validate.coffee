@@ -31,7 +31,6 @@ validityTest = (test) ->
         err = e
         stderr = stde
         stdout = stdo
-        console.log err, stderr, stdout
         done()
 
     itOrSkip errCodeAssertion, () ->
