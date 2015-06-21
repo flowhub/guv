@@ -16,6 +16,7 @@ checkAndScale = (cfg, callback) ->
       continue if name == '*'
       state[name] = s = {}
       s.current_jobs = queues[role.queue]
+      s.app = role.app
       return callback new Error "Could not get data for queue: #{role.queue}" if not s.current_jobs?
 
       s.new_workers = scale.scale role, s.current_jobs
