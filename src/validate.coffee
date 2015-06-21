@@ -1,5 +1,6 @@
 debug = require('debug')('guv:validate')
 program = require 'commander'
+fs = require 'fs'
 
 config = require './config'
 
