@@ -39,7 +39,7 @@ describe 'Governor', ->
     c = \
     """
     *{app=guv-test};
-    my{p=60,deadline=240,queue=myrole.IN,worker=web, minimum=0, max=2};
+    my{queue=myrole.IN,worker=web, minimum=0, max=1};
     """
     cfg = guv.config.parse c
     beforeEach (done) ->
