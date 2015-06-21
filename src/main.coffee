@@ -30,5 +30,7 @@ exports.main = () ->
       throw err if err
       console.log state
   else
+    guv.on 'error', (err) ->
+      console.log 'ERROR:', err
     guv.start()
 

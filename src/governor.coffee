@@ -1,5 +1,6 @@
 
 debug = require('debug')('guv:governor')
+{ EventEmitter } = require 'events'
 
 heroku = require './heroku'
 rabbitmq = require './rabbitmq'
@@ -28,7 +29,7 @@ checkAndScale = (cfg, callback) ->
       return callback null, state
 
 
-class Governor
+class Governor extends EventEmitter
   constructor: (c) ->
     @config = c
     @state =
@@ -44,6 +45,8 @@ class Governor
     runFunc = () =>
       @runOnce (err, state) =>
         debug 'ran iteration', err, state
+        @emit 'error', err if err
+        @emit 'state', state
 
     interval = setInterval runFunc, 30*1000
     runFunc() # do first iteration right now
@@ -52,7 +55,9 @@ class Governor
     clearInterval @interval if @interval
 
   runOnce: (callback) ->
-    checkAndScale @config, callback
-
+    try
+      checkAndScale @config, callback
+    catch e
+      return callback e
 
 exports.Governor = Governor
