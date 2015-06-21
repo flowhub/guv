@@ -25,5 +25,5 @@ exports.getStats = (config, callback) ->
     stats = {}
     for queue in queues
       details[queue.name] = queue
-      stats[queue.name] = queue.messages_ready
+      stats[queue.name] = queue.messages
     return callback null, stats, details
