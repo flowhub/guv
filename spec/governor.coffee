@@ -11,7 +11,6 @@ describe 'Governor', ->
   before () ->
     # must be set before running tests
     cfg = guv.config.parse ""
-    console.log cfg
     chai.expect(cfg['*'].broker).to.include 'amqp://'
     chai.expect(process.env['HEROKU_API_KEY']).to.have.length.above 10
     mocks.startRecord()
