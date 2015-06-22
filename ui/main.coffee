@@ -1,6 +1,4 @@
 
-# Plotting Gaussians with d3
-# http://bl.ocks.org/phil-pedruco/88cb8a51cdce45f13c7e
 
 # guv = require 'guv'
 
@@ -9,7 +7,7 @@ dom =
   id: (name) ->
     document.getElementById name
 
-# UI React widgets      
+# UI React widgets
 class TestStatusClass
   render: () ->
     total = countCases @props.suites, () -> return true
@@ -33,11 +31,11 @@ TestStatus = React.createFactory TestStatusClass
 lineChart = (datum) ->
   # Setup
   chart = nv.models.lineChart()
-                .margin({left: 100})
-                .useInteractiveGuideline(true)
-                .showLegend(true)
-                .showYAxis(true)
-                .showXAxis(true)
+            .margin({left: 100})
+            .useInteractiveGuideline(true)
+            .showLegend(true)
+            .showYAxis(true)
+            .showXAxis(true)
 
   chart = nv.models.lineWithFocusChart()
 
@@ -57,7 +55,103 @@ lineChart = (datum) ->
   # Update the chart when window resizes.
   nv.utils.windowResize chart.update
 
-  return chart;
+  return chart
+
+# http://bl.ocks.org/phil-pedruco/88cb8a51cdce45f13c7e
+normalChart = (data) ->
+  margin =
+    top: 20
+    right: 20
+    bottom: 30
+    left: 50
+  width = 960 - margin.left - margin.right
+  height = 500 - margin.top - margin.bottom
+
+  x = d3.scale.linear()
+    .range([0, width])
+
+  y = d3.scale.linear()
+    .range([height, 0])
+
+  x.domain(d3.extent(data, (d) -> return d.q ))
+  y.domain(d3.extent(data, (d) -> return d.p ))
+
+  xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+
+  yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+
+  line = d3.svg.line()
+    .x( (d) -> return x(d.q) )
+    .y( (d) -> return y(d.p) )
+
+  svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+
+  svg.append("path")
+    .datum(data)
+    .attr("class", "line")
+    .attr("d", line)
+
+# from http://bl.ocks.org/mbostock/4349187
+normal = () ->
+  x = 0
+  y = 0
+  rds = null
+  c = null
+
+  doWhile = (func, condition) ->
+    func()
+    func() while condition()
+    
+  doWhile () ->
+    x = Math.random() * 2 - 1
+    y = Math.random() * 2 - 1
+    rds = x * x + y * y
+  , () ->
+    return (rds == 0 || rds > 1)
+
+  c = Math.sqrt(-2 * Math.log(rds) / rds) # Box-Muller transform
+  return x * c # throw away extra sample y * c
+
+# taken from Jason Davies science library
+# https://github.com/jasondavies/science.js/
+gaussian = (x) ->
+  gaussianConstant = 1/Math.sqrt(2 * Math.PI)
+  mean = 0
+  sigma = 1
+
+  x = (x - mean) / sigma
+  return gaussianConstant * Math.exp(-.5 * x * x) / sigma
+
+
+gaussianTestData = () ->
+  data = []
+  # loop to populate data array with probabily - quantile pairs
+  for i in [0...100]
+    q = normal()
+    p = gaussian q
+    el = { q: q, p: p }
+    data.push el
+
+  data.sort (x, y) ->
+    return x.q - y.q
+
 
 # get data
 dataSeries = (params) ->
@@ -116,8 +210,8 @@ main = () ->
     nv.addGraph () ->
       graph = lineChart data
       d3.select(selector)
-          .datum(data) 
-          .call(graph)
+        .datum(data)
+        .call(graph)
       return graph
 
   inputs = ["weekly", "daily", "base"]
@@ -132,6 +226,9 @@ main = () ->
   for id in inputs
     dom.id(id).oninput = onChange
   onChange()
+
+  gauss = gaussianTestData()
+  normalChart gauss
 
   console.log 'main DONE'
 
