@@ -19,7 +19,6 @@ guv is written in Node.js, but can be used with workers in any programming langu
 * Simple algorithm for scaling to hit a deadline exists
 * Scaling algorithm does not compensate for worker boot time
 * Used in production at [The Grid](https://thegrid.io), with [MsgFlo](https://github.com/msgflo/msgflo)
-* ! Missing tests
 
 ## Usage
 

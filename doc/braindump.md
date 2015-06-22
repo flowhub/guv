@@ -1,4 +1,38 @@
 
+## Tools TODO
+
+- Timing Heroku dyno boot time
+- Calculating mean, stddev from processing time stats. Output as config
+- Test whether processing times are normally distributed.
+Visual+[analytical test](https://en.wikipedia.org/wiki/Normality_test).
+- Calculate clusters/bins to separate multi-mode, non-normal data into
+- A runnable+introspectable model of the scaling algorithm. Ability to test it on real/historical data.
+- For a given configuration, estimate what loads can (and cannot) be handled
+
+## Smarter scaling
+
+Right now, guv uses the simplest (stupidest) model that can possibly work:
+Scale the number of workers proportionally to messages in the queue.
+Scaling factor is based on processing time estimates versus deadline.
+
+This model is completely reactive, it only actuates changes after situation as occurred. No prediction.
+The model does not take into account the (significant) time costs of dyno boot up.
+
+Scaling function should receive all neccesary state.
+The state collected could be a window of (jobs, workers) measurements.
+Measurements must be timestamped, window should be time-based, number of measurements/time
+as high as possible (without being disruptive). Cannot assume measurements will be evenly spaced.
+
+Key questions:
+
+- When considering to scale down,
+what is the probability that we will go back up or above N messages (and thus W workers),
+within the next 30-60 seconds.
+- What is the cost of overestimating/overprovisioning
+
+
+## Initial design
+
 Requirements
 
 - Scale workers based on queue length
@@ -16,14 +50,6 @@ Requirements
 Non-requirements
 
 - Scaling non-compute resources (databases etc)
-
-
-Best practices
-
-- Minimize worker boot time. More effective auto-scaling and robustness against spikes
-- Measure the statistics of your job processing time. Get mean and variance as right as you can
-- Put jobs with different processing times into reparate worker roles. GUV assumes normal distribution with single mean
-- Monitor actual job processing time end-to-end, compare with deadline. Flag instances where failing to meet QoS
 
 
 Settings
@@ -47,7 +73,7 @@ Things to consider
 
 Test cases
 
-    Periodic fluctuations (sine wave)
+    Periodic fluctuations (sine wave, square, triangle)
     Within-target spike
     Out-of-bounds spike
 
@@ -58,7 +84,7 @@ Architecture
 - Actuators: Activates new number of resources
 - Notificators: 
 
-Prior art
+## Prior art
 
 - Dynosaur. Ruby gem. Dedicated dyno.
 http://engineering.harrys.com/2014/01/02/dynosaur-a-heroku-autoscaler.html
@@ -79,7 +105,9 @@ https://addons.heroku.com/adept-scale
 - Heroku Vector. Ruby,Linear scaling.
 https://github.com/wpeterson/heroku-vector
 
-References
+## References
 
 - https://devcenter.heroku.com/articles/scheduled-jobs-custom-clock-processes
-
+- https://en.wikipedia.org/?title=Queueing_theory
+- http://stats.stackexchange.com/questions/18821/why-is-the-poisson-distribution-chosen-to-model-arrival-processes-in-queueing-th
+- http://www.math.uah.edu/stat/poisson/Poisson.html

@@ -1,4 +1,7 @@
 
+# Plotting Gaussians with d3
+# http://bl.ocks.org/phil-pedruco/88cb8a51cdce45f13c7e
+
 # guv = require 'guv'
 
 # DOM helpers
