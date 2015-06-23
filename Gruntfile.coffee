@@ -21,7 +21,23 @@ module.exports = ->
             value: 100
             level: 'warn'
 
+    # Browser build
+    browserify:
+      options:
+        transform: [
+          ['coffeeify']
+        ]
+        browserifyOptions:
+          extensions: ['.coffee']
+          fullPaths: false
+      src:
+        files:
+          'browser/guv.js': ['index.js']
+        options:
+          watch: true
+
   # Grunt plugins used for building
+  @loadNpmTasks 'grunt-browserify'
 
   # Grunt plugins used for testing
   @loadNpmTasks 'grunt-mocha-test'
@@ -30,7 +46,7 @@ module.exports = ->
   # Our local tasks
 
   @registerTask 'build', 'Build the chosen target platform', (target = 'all') =>
-    # nothing
+    @task.run 'browserify'
 
   @registerTask 'test', 'Build and run automated tests', (target = 'all') =>
     @task.run 'coffeelint'
