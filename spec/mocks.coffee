@@ -59,4 +59,4 @@ exports.stopRecord = () ->
   json = JSON.stringify rets, null, '  '
   outpath = path.join __dirname, 'fixtures', 'nocks.json'
   fs.writeFileSync outpath, json
-  console.log "#{rets.legnth} captured HTTP requests written to #{outpath}"
+  console.log "#{rets.length} captured HTTP requests written to #{outpath}"
