@@ -11,88 +11,16 @@
   input: "# my comment"
   parsed: {}
   valid: true
--
-  name: 'multiline, separated by newlines'
-  input: |
-    *{boot=30}
-    myworker{t=10.00,worker=workerdyno}
-    worker2{q=myqueue}
-  parsed:
-   "*":
-    boot: "30"
-   myworker:
-    t: "10.00"
-    worker: "workerdyno"
-   worker2:
-    q: "myqueue"
-  valid: true
--
-  name: 'multiline, with comments'
-  input: |
-    # header
-    *{boot=30}
-    myworker{t=10.00,worker=workerdyno}
-    # second
-    worker2{q=myqueue}
-    # trailing
-  parsed:
-   "*":
-    boot: "30"
-   myworker:
-    t: "10.00"
-    worker: "workerdyno"
-   worker2:
-    q: "myqueue"
-  valid: true
--
-  name: 'leading and trailing whitespace'
-  input: " b{boot=30}; "
-  parsed:
-    b:
-      boot: "30"
-  valid: true
--
-  name: 'one line, separated by ;'
-  input: "*{boot=30}; myworker{t=1,worker=workerdyno};worker2{q=myqueue}"
-  parsed:
-   "*":
-    boot: "30"
-   myworker:
-    t: "1"
-    worker: "workerdyno"
-   worker2:
-    q: "myqueue"
-# error cases
--
-  name: 'missing role name'
-  input: " {boot=30};"
-  error:
-    line: 1
-    column: 2
-    mention: role
-  invalid: 'syntax'
--
-  name: 'missing variable value'
-  input: "g{boot=};"
-  error:
-    line: 1
-    column: 8
-    mention: value
-  invalid: 'syntax'
--
-  name: 'missing variable name'
-  input: "g{=ff};"
-  error:
-    line: 1
-    column: 3
-    mention: variable
-  invalid: 'syntax'
 # typical real systems
 -
   name: 'imgflo'
   input: |
-    *{boot=20,app=imgflo,min=2,max=10}
-    processing{d=6.0,p=1.000,queue=imgflo_worker.IN}
+    '*':
+      boot: 20
+      app: imgflo
+      min: 2
+      max: 10
+    processing: { d: 6.0, p: 1.000, queue: 'imgflo_worker.IN' }
   config:
    "*":
     boot: 20.0
@@ -105,11 +33,11 @@
 -
   name: 'grid-apis'
   input: |
-    *{boot=40,app=the-grid-apis}
-    solve{d=30.0,p=5.0}
-    gssmeasure{deadline=30.0,p=5.0}
-    measure{d=60.0,processing=15.0}
-    share{}
+    '*': { boot: 40, app: the-grid-apis }
+    solve: {d: 30.0, p: 5.0}
+    gssmeasure: { deadline: 30.0, p: 5.0 }
+    measure: { d: 60.0, processing: 15.0 }
+    share: {}
   config:
     '*':
       boot: 40.0

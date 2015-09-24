@@ -3,7 +3,9 @@
   expected: 'should go to minimum'
   result: 3
   role: 'def'
-  config: '*{min=3}; def{}'
+  config: |
+    '*': {min: 3}
+    def: {}
   state:
     messages: 0
 -
@@ -11,14 +13,18 @@
   expect: 'should go to maximum'
   result: 40
   role: 'def'
-  config: '*{max=40}; def{}'
+  config: |
+    '*': {max: 40}
+    def: {}
   state:
     messages: 10000
 -
   name: 'many messages with role-specific processing/deadline'
   expect: 'should go to maximum'
   result: 5
-  config: '*{min=0}; my{p=60,deadline=240}'
+  config: |
+    '*': {min: 0}
+    my: {p:60, deadline: 240}
   role: 'my'
   state:
     messages: 1000

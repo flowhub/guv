@@ -2,10 +2,9 @@
 debug = require('debug')('guv:config')
 gaussian = require 'gaussian'
 url = require 'url'
-peg = require 'pegjs'
+yaml = require 'js-yaml'
 fs = require 'fs'
 path = require 'path'
-parser = peg.buildParser fs.readFileSync (path.join __dirname, '..', 'config.peg') ,'utf-8'
 
 calculateTarget = (config) ->
 
@@ -33,14 +32,9 @@ jobsInDeadline = (config) ->
 
 # Syntactical part
 parse = (str) ->
-  try
-    return parser.parse str
-  catch e
-    if e.name == 'SyntaxError'
-      # Enrich message with where it occurred
-      orig = e.message.replace('SyntaxError: ', '')
-      e.message = "SyntaxError: line #{e.line},column #{e.column} #{orig}"
-    throw e
+  o = yaml.safeLoad str
+  o = {} if not o
+  return o
 
 configFormat = () ->
   varFormat =
@@ -114,8 +108,6 @@ normalize = (role, vars, globals) ->
 
     # Defined var
     f = format.options[name]
-    if f?.type == 'number'
-      val = parseFloat(val)
 
     retvars[name] = val
 

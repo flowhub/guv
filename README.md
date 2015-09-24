@@ -53,47 +53,56 @@ To verify that guv is running and working, check its log.
 
 ## Configuration
 
+The configuration format for guv is based specified in [YAML](http://yaml.org/).
+Since it is a superset of JSON, you can also use that.
+
 One guv instance can handle multiple worker *roles*.
 Each role has an associated queue, worker and scaling configuration - specified as variables.
 
     # comment
-    myrole{variable1=value1}
-    otherrole{variable2=value2}
+    myrole:
+      variable1: value1
+    otherrole:
+      variable2: value2
 
 The special role name `*` is used for global, application-wide settings.
 Each of the individual roles will inherit this configuration if they do not override it.
 
     # Heroku app is my-heroku-app, defaults to using a minimum of 5 workers, maximum of 50
-    *{min=5,max=50,app=my-heroku-app}
+    '*': {min: 5, max: 50, app: my-heroku-app}
     # uses only defaults
-    imageprocessing{}
+    imageprocessing: {}
     # except for text processing
-    textprocessing{max=10}
+    textprocessing:
+      max: 10
 
 guv attempts to scale workers to be within a `deadline`, based on estimates of `processing` time.
 To let it do a good job you should always specify the deadline, and *mean* processing time.
 
     # times are in seconds
-    textprocessing{deadline=100, processing=30}
+    textprocessing:
+      deadline: 100
+      processing: 30
 
 You can also specify the variance, as 1 standard deviation
 
     # 68% of jobs complete within +- 3 seconds
-    textprocessing{deadline=100, processing=30, stddev=3}
+    textprocessing:
+      deadline: 100
+      processing: 30
+      stddev: 3
 
 The name of the `worker` and `queue` defaults to the `role name`, but can be overridden.
 
     # will use worker=colorextract and queue=colorextract
-    colorextract{}
+    colorextract: {}
     # explicitly specifying
-    histogram{queue=hist.INPUT, worker=processhistograms}
+    histogram:
+      queue: 'hist.INPUT'
+      worker: processhistograms
 
 For list of all supported configuration variables see [./src/config.coffee](./src/config.coffee).
 Many of the commonly used ones have short and long-form names.
-
-You can put multiple role definitions on single line by delimiting with `;`
-
-    first{foo=bar}; second{faz=baz}
 
 guv configuration files by convention use the extension *.guv*, for instance `autoscale.guv` or `myproject.guv`.
 

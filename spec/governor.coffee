@@ -37,8 +37,8 @@ describe 'Governor', ->
   describe 'is happy', ->
     c = \
     """
-    *{app=guv-test};
-    my{queue=myrole.IN,worker=web, minimum=0, max=1};
+    '*': { app: 'guv-test'}
+    my: {queue: 'myrole.IN', worker: web, minimum: 0, max: 1}
     """
     cfg = guv.config.parse c
     beforeEach (done) ->

@@ -9,7 +9,7 @@ path = require 'path'
 guv_validate = (configstr, callback) ->
   node = 'node'
   prog = path.join __dirname, '..', 'bin', 'guv-validate'
-  cmd = "#{node} #{prog} --config '#{configstr}'"
+  cmd = "#{node} #{prog} --config \"#{configstr}\""
   return exec cmd, callback
 
 validityTest = (test) ->
