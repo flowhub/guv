@@ -3,5 +3,6 @@ module.exports = {
   config: require('./src/config'),
   scale: require('./src/scale'),
   validate: require('./src/validate'),
-  governor: require('./src/governor')
+  governor: require('./src/governor'),
+  statuspage: require('./src/statuspage')
 };
