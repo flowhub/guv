@@ -106,6 +106,30 @@ Many of the commonly used ones have short and long-form names.
 
 guv configuration files by convention use the extension *.guv*, for instance `autoscale.guv` or `myproject.guv`.
 
+# Metrics support
+
+## New Relic
+
+guv can report metrics about how workers are being scaled to [New Relic](https://newrelic.com/) Insights.
+
+    FIXME: document how to set up
+
+## Statuspage.io
+
+guv can report metrics about in-flight jobs to your [statuspage.io](http://statuspage.io/).
+
+Set the API key as an environment variable
+
+    export STATUSPAGE_API_TOKEN=mytoken
+
+And configure in your guv.yaml file:
+
+    '*':
+      statuspage: 'my-statuspage-id'
+    workerA:
+      metric: 'my-statuspage-metric'
+
+
 # Best practices
 
 * Measure the actual processing times of your jobs.

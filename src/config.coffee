@@ -57,6 +57,10 @@ configFormat = () ->
     [ null, 'app', 'Application name (ie on Heroku)', 'string', 'GUV_APP envvar' ]
     [ null, 'broker', 'Broker (ie RabbitMQ) URL', 'url', 'CLOUDAMQP_URL or GUV_BROKER envvar' ]
 
+    # http://statuspage.io integration
+    [ null, 'statuspage', 'Page id (for statuspage.io)', 'string', 'STATUSPAGE_ID envvar' ]
+    [ null, 'metric', 'Metric id (for statuspage.io)', 'string', null ]
+
     # derived/advanced process parameters
     [ null, 'percentile', ' ', '%', 99 ]
     [ null, 'target', ' ', 'seconds', 'Calculated based on process time and variance, to meet percentile and deadline.' ]
@@ -83,6 +87,7 @@ addDefaults = (format, role, c) ->
     c[name] = option.default if not c[name]?
 
   # TODO: make these functions with a toString, declared in varList?
+  c.statuspage = process.env['STATUSPAGE_ID'] if not c.statuspage
   c.broker = process.env['GUV_BROKER'] if not c.broker
   c.broker = process.env['CLOUDAMQP_URL'] if not c.broker
   if role != '*'

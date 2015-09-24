@@ -5,6 +5,7 @@ config = require './config'
 heroku = require './heroku'
 governor = require './governor'
 newrelic = require './newrelic'
+statuspage = require './statuspage'
 
 program = require 'commander'
 
@@ -23,7 +24,8 @@ exports.main = () ->
   heroku.dryrun = options['dry-run']
   cfg = config.parse options.config
   guv = new governor.Governor cfg
-  newrelic.register guv
+  newrelic.register guv, cfg
+  statuspage.register guv, cfg
 
   console.log 'Using configuration:\n', options.config
 
