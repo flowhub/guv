@@ -1,7 +1,7 @@
 guv
 ===
 
-`guv`, aka Grid Utilization Virgilante, is a governor for your (Heroku) workers:
+`guv`, aka Grid Utilization Vigilante, is a governor for your (Heroku) workers:
 It automatically scales the numbers of workers based on number of pending jobs in a (RabbitMQ) queue.
 
 The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*.
