@@ -9,32 +9,41 @@ heroku = require './heroku'
 rabbitmq = require './rabbitmq'
 scale = require './scale'
 
-checkAndScale = (cfg, callback) ->
+newState = (cfg, queues) ->
   state = {}
+  for name, role of cfg
+    continue if name == '*'
+    state[name] = s = {}
+    s.current_jobs = queues[role.queue]
+    s.metric = role.metric
+    s.app = role.app
+
+    if not s.current_jobs?
+      s.error = new Error "Could not get data for queue: #{role.queue}"
+    else
+      s.new_workers = scale.scale role, s.current_jobs
+
+  return state
+
+realizeState = (cfg, state, callback) ->
+  workers = []
+  for name, role of state
+    continue if role.error
+    workers.push
+      app: role.app
+      role: cfg[name].worker
+      quantity: role.new_workers
+
+  heroku.setWorkers cfg['*'], workers, (err) ->
+    return callback err, state if err
+    return callback null, state
+
+checkAndScale = (cfg, callback) ->
   rabbitmq.getStats cfg['*'], (err, queues) ->
     return callback err if err
 
-    workers = []
-    for name, role of cfg
-      continue if name == '*'
-      state[name] = s = {}
-      s.current_jobs = queues[role.queue]
-      s.metric = role.metric
-      s.app = role.app
-
-      if not s.current_jobs?
-        s.error = new Error "Could not get data for queue: #{role.queue}"
-      else
-        s.new_workers = scale.scale role, s.current_jobs
-        workers.push
-          app: role.app
-          role: role.worker
-          quantity: s.new_workers
-
-    heroku.setWorkers cfg['*'], workers, (err) ->
-      return callback err, state if err
-      return callback null, state
-
+    state = newState cfg, queues
+    realizeState cfg, state, callback
 
 class Governor extends EventEmitter
   constructor: (c) ->
