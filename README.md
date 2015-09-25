@@ -143,27 +143,27 @@ And configure in your guv.yaml file:
 
 # Best practices
 
-* Measure the actual processing times of your jobs.
+### Measure the actual processing times of your jobs
 Calculate mean and standard deviations, and use these in the `guv` config.
 
-* Measure the actual end-to-end processing time for your jobs.
+### Measure the actual end-to-end processing time for your jobs
 Monitor that they meet your target deadlines, and identify the load cases where they do not.
 
-* Keep boot times of your workers as low as possible.
+### Keep boot times of your workers as low as possible
 Responsiveness to variable loads, especially sudden peaks is severely affected by boot time.
 Avoid doing expensive computations, lots of I/O or waiting for external services.
 If neccesary do more during app build time, like creating caches or single-file builds.
 
-* Separate out jobs with different processing time characterstics to different worker roles
+### Separate out jobs with different processing time characterstics to different worker roles
 If your job processing time has several clear peaks instead of one in the processing time histogram,
 determine what the different cases are and use dedicated worker roles.
 If your job processing time depends on the size of the job payload, implement an estimation
 algorithm and route jobs into N different queues depending on which bin they fall into.
 
-* Separate out jobs with different deadlines to different workers
+### Separate out jobs with different deadlines to different workers
 Maintenance work, and anything else not required to maintain responsiveness for users,
 should be done in separate queues, usually with a higher deadline.
-This ensures that such work does not disrupt quality-of-service.
+This ensures that such background work does not disrupt quality-of-service.
 
-* Use only one primary input queue per worker
+### Use only one primary input queue per worker
 
