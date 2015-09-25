@@ -4,8 +4,11 @@ guv
 `guv`, aka Grid Utilization Vigilante, is a governor for your (Heroku) workers:
 It automatically scales the numbers of workers based on number of pending jobs in a (RabbitMQ) queue.
 
-The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*.
-This is based on estimates of the processing time (mean, variance).
+> Variable loads? Don't know how many servers you need? Woken up just tostart more servers? Let robots do it for you!
+
+The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*,
+that you decide as your desired quality-of-service.
+The scaling is based on estimates of the job processing time (mean, variance).
 
 guv is written in Node.js, but can be used with workers in any programming language.
 
@@ -19,7 +22,8 @@ guv is written in Node.js, but can be used with workers in any programming langu
 * Optional metric reporting to statuspage.io and New Relic
 * Uses simple algorithm for scaling to hit a deadline
 * Note: Scaling algorithm does not compensate for worker boot time
-* Used in production at [The Grid](https://thegrid.io), with [MsgFlo](https://github.com/msgflo/msgflo)
+* Used in production at [The Grid](https://thegrid.io) since June 2015
+(with [MsgFlo](https://github.com/msgflo/msgflo))
 
 ## Usage
 
@@ -45,7 +49,7 @@ For guv own configuration we also recommend using an envvar.
 This allows you to change the configuration without redeploying.
 See below for details on the configuration format.
 
-    heroku config:set GUV_CONFIG="`cat autoscale.guv`"
+    heroku config:set GUV_CONFIG="`cat autoscale.guv.yaml`"
 
 To verify that guv is running and working, check its log.
 
@@ -105,7 +109,7 @@ The name of the `worker` and `queue` defaults to the `role name`, but can be ove
 For list of all supported configuration variables see [./src/config.coffee](./src/config.coffee).
 Many of the commonly used ones have short and long-form names.
 
-guv configuration files by convention use the extension *.guv*, for instance `autoscale.guv` or `myproject.guv`.
+guv configuration files by convention use the extension *.guv.yaml*, for instance `autoscale.guv.yaml` or `myproject.guv.yaml`.
 
 # Metrics support
 
