@@ -120,9 +120,17 @@ guv configuration files by convention use the extension *.guv.yaml*, for instanc
 
 ## New Relic
 
-guv can report metrics about how workers are being scaled to [New Relic](https://newrelic.com/) Insights.
+guv can report errors, and metrics about how workers are being scaled to [New Relic](https://newrelic.com/) Insights.
 
-    FIXME: document how to set up
+To enable, [setup a newrelic.js configuration](https://docs.newrelic.com/docs/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration)
+in the application that runs guv.
+
+guv will one events of type `GuvScaled` per configured role, with payload:
+
+      role: 'workerA'    # guv role this event is for
+      app: 'imgflo'      # Heroku app name
+      jobs: 142          # current jobs in queue
+      workers: 7         # new value for number of workers
 
 ## Statuspage.io
 
