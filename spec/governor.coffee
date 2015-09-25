@@ -108,7 +108,6 @@ describe 'Governor', ->
         gov.once 'error', (err) ->
           chai.expect(err).to.exist
           chai.expect(err.message).to.contain cfg.wrongqueue.queue
-          console.log 'on err', err
           done()
         gov.once 'state', (state) ->
           newState = state
