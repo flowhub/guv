@@ -4,7 +4,8 @@ guv
 `guv`, aka Grid Utilization Vigilante, is a governor for your (Heroku) workers:
 It automatically scales the numbers of workers based on number of pending jobs in a (RabbitMQ) queue.
 
-> Variable loads? Don't know how many servers you need? Woken up just tostart more servers? Let robots do it for you!
+> Variable loads? Don't know how many servers you need? Woken up just to start more servers?
+> Let robots do the tedious work for you!
 
 The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*,
 that you decide as your desired quality-of-service.
