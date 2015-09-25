@@ -14,6 +14,10 @@ guv is written in Node.js, but can be used with workers in any programming langu
 
 [Origin of the word guv](http://english.stackexchange.com/questions/14370/what-is-the-origin-of-the-british-guv-is-it-still-used-colloquially).
 
+## License
+
+guv is free and open source software under the [MIT license](./LICENSE.md)
+
 ## Status
 
 *In production*
@@ -122,6 +126,7 @@ guv can report metrics about how workers are being scaled to [New Relic](https:/
 ## Statuspage.io
 
 guv can report metrics about in-flight jobs to your [statuspage.io](http://statuspage.io/).
+See [status.thegrid.io](http://status.thegrid.io) for an example.
 
 Set the API key as an environment variable
 
