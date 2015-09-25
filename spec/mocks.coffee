@@ -1,4 +1,6 @@
 
+debug = require('debug')('guv:spec:mocks')
+{ EventEmitter } = require 'events'
 nock = null
 path = require 'path'
 fs = require 'fs'
@@ -44,6 +46,21 @@ exports.RabbitMQ =
       .reply(r.status, r.response)
     return scope
 
+exports.StatusPageIO =
+  expectMetric: (pageId, metric, value) ->
+    return new NoMock if not exports.enable
+
+    matches = (body) ->
+      hasTimestamp = typeof(body?.data?.timestamp) == 'number'
+      correctValue = body?.data?.value == value
+      debug 'statuspage.io metric hit', body, hasTimestamp, correctValue
+      return hasTimestamp and correctValue
+
+    scope = require('nock')('https://api.statuspage.io/v1')
+      .post("/pages/#{pageId}/metrics/#{metric}/data.json", matches)
+      .reply(201)
+
+    return scope
 
 exports.startRecord = () ->
   return if not record
