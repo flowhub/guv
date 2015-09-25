@@ -67,6 +67,8 @@ configFormat = () ->
     # derived/advanced process parameters
     [ null, 'percentile', ' ', '%', 99 ]
     [ null, 'target', ' ', 'seconds', 'Calculated based on process time and variance, to meet percentile and deadline.' ]
+    [ null, 'pollinterval', 'How often to poll RabbitMQ, and possibly make changes', 'seconds', 30 ]
+    [ null, 'history', 'How long history to consider, before scaling workers down', 'seconds', 120 ]
 
   ]
   format =

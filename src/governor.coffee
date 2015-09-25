@@ -9,8 +9,17 @@ heroku = require './heroku'
 rabbitmq = require './rabbitmq'
 scale = require './scale'
 
-newState = (cfg, queues) ->
+# NOTE: original order
+extractHistory = (history, rolename, key) ->
+  predictions = []
+  for state in history
+    predictions.push state[rolename][key]
+  return predictions
+
+nextState = (cfg, window, queues) ->
+
   state = {}
+  # TODO: store timestamps?
   for name, role of cfg
     continue if name == '*'
     state[name] = s = {}
@@ -21,7 +30,16 @@ newState = (cfg, queues) ->
     if not s.current_jobs?
       s.error = new Error "Could not get data for queue: #{role.queue}"
     else
-      s.new_workers = scale.scale role, s.current_jobs
+      history = extractHistory window, name, 'estimated_workers'
+      currentWorkers = extractHistory(window, name, 'current_workers')[history.length-1]
+      workers = scale.scaleWithHistory role, name, history, currentWorkers, s.current_jobs
+      s.estimated_workers = workers.estimate
+      if workers.next?
+        s.new_workers = workers.next
+        s.current_workers = workers.next
+      else
+        # remember for later
+        s.current_workers = currentWorkers
 
   return state
 
@@ -29,6 +47,7 @@ realizeState = (cfg, state, callback) ->
   workers = []
   for name, role of state
     continue if role.error
+    continue if not role.new_workers?
     workers.push
       app: role.app
       role: cfg[name].worker
@@ -38,44 +57,50 @@ realizeState = (cfg, state, callback) ->
     return callback err, state if err
     return callback null, state
 
-checkAndScale = (cfg, callback) ->
+checkAndScale = (cfg, history, callback) ->
   rabbitmq.getStats cfg['*'], (err, queues) ->
     return callback err if err
 
-    state = newState cfg, queues
+    state = nextState cfg, history, queues
     realizeState cfg, state, callback
 
 class Governor extends EventEmitter
   constructor: (c) ->
     @config = c
-    @state =
-      roles: {}
-    for name, vars of @config
-      continue if name == '*'
-      @state.roles[name] = {}
-
+    @history = []
     @interval = null
 
-  # TODO: emit events on error, iteration
+    @historysize = Math.floor(@config['*'].history/@config['*'].pollinterval)
+    @pollinterval = @config['*'].pollinterval*1000
+
   start: () ->
     runFunc = () =>
       @runOnce (err, state) =>
-        debug 'ran iteration', err, state
-        @emit 'state', state
-        @emit 'error', err if err
-        for name, role of state
-          @emit 'error', role.error if role.error
 
-    interval = setInterval runFunc, 30*1000
+
+    interval = setInterval runFunc, @pollinterval
     runFunc() # do first iteration right now
 
   stop: () ->
     clearInterval @interval if @interval
 
-  runOnce: (callback) ->
+  runOnceInternal: (callback) ->
     try
-      checkAndScale @config, callback
+      checkAndScale @config, @history, (err, state) =>
+        @history.push state
+        @history = @history.slice Math.max(@history.length-@historysize, 0)
+        debug 'history length', @history.length
+        return callback err, state
     catch e
       return callback e
+
+  runOnce: (callback) ->
+    @runOnceInternal (err, state) =>
+      debug 'ran iteration', err, state
+      @emit 'state', state
+      @emit 'error', err if err
+      for name, role of state
+        @emit 'error', role.error if role.error
+      return callback err, state
 
 exports.Governor = Governor

@@ -1,5 +1,6 @@
 
 chai = require 'chai'
+async = require 'async'
 
 guv = require '..'
 mocks = require './mocks'
@@ -73,9 +74,54 @@ describe 'Governor', ->
         governor.start()
 
     describe 'lots of messages then less', ->
-      it 'should first scale up'
-      it 'then scale down again'
+      setWorkers = null
 
+      it 'should scale up quickly then slowly down again', (done) ->
+        governor.once 'error', (err) ->
+          chai.expect(err).to.not.exist
+
+        series = [
+          { messages: 0, workers: cfg.my.minimum } # filling up history
+          { messages: 0, workers: null }
+          { messages: 0, workers: null }
+          { messages: 0, workers: null }
+          { messages: 100, workers: cfg.my.maximum } # fast up
+          { messages: 0, workers: null } # no-op for 120 seconds, 4 iterations
+          { messages: 0, workers: null }
+          { messages: 0, workers: null }
+          { messages: 0, workers: null }
+          { messages: 0, workers: cfg.my.minimum } # down
+        ]
+        series = series.map (s, idx) ->
+          s.name = "iteration #{idx} of #{series.length}"
+          return s
+
+        iteration = (data, callback) ->
+
+          setTimeout () ->
+            # prep this iteration
+            mocks.RabbitMQ.setQueues { 'myrole.IN': { 'messages': data.messages }}
+            if data.workers?
+              setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'web': data.workers }
+            else
+              setWorkers = null
+
+            # run
+            governor.runOnce (err, state) ->
+              return callback err if err
+
+              # verify
+              try
+                if setWorkers
+                  setWorkers.done()
+              catch e
+                return callback e if e
+              return callback null, state
+
+          , 10
+
+        async.mapSeries series, iteration, (err) ->
+          return done err
 
   # Error cases
   describe 'Errors', ->
