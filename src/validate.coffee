@@ -1,3 +1,7 @@
+#     guv - Scaling governor of cloud workers
+#     (c) 2015 The Grid
+#     guv may be freely distributed under the MIT license
+
 debug = require('debug')('guv:validate')
 program = require 'commander'
 fs = require 'fs'

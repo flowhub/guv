@@ -1,3 +1,6 @@
+#     guv - Scaling governor of cloud workers
+#     (c) 2015 The Grid
+#     guv may be freely distributed under the MIT license
 
 AMQPStats = require 'amqp-stats'
 debug = require('debug')('guv:rabbitmq')
