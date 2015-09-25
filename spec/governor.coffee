@@ -18,21 +18,6 @@ describe 'Governor', ->
   after () ->
     mocks.stopRecord()
 
-  # Error cases
-  describe 'Errors', ->
-
-    describe 'cannot connect to Heroku', ->
-      it 'should emit error'
-    describe 'specified worker does not exist', ->
-      it 'should emit error'
-      it 'other workers should be unaffected'
-
-    describe 'cannot connect to RabbitMQ', ->
-      it 'should emit error'
-    describe 'specified queue does not exist', ->
-      it 'should emit error'
-      it 'other workers should be unaffected'
-
   # Happy cases
   describe 'is happy', ->
     c = \
@@ -90,3 +75,50 @@ describe 'Governor', ->
     describe 'lots of messages then less', ->
       it 'should first scale up'
       it 'then scale down again'
+
+
+  # Error cases
+  describe 'Errors', ->
+
+    describe 'cannot connect to Heroku', ->
+      it 'should emit error'
+    describe 'specified worker does not exist', ->
+      it 'should emit error'
+      it 'other workers should be unaffected'
+
+    describe 'cannot connect to RabbitMQ', ->
+      it 'should emit error'
+
+    describe 'specified queue does not exist', ->
+      newState = null
+      cfg = null
+      setWorkers = null
+
+      it 'should emit error', (done) ->
+        c = """
+        '*': { app: 'guv-test'}
+        wrongqueue: {queue: 'myrole.NONEXIST', worker: wrongworker, minimum: 0, max: 1}
+        correctqueue: {queue: 'myrole.IN', worker: correctworker, minimum: 0, max: 1}
+        """
+        cfg = guv.config.parse c
+        gov = new guv.governor.Governor cfg
+        mocks.RabbitMQ.setQueues { 'myrole.IN': { 'messages': 334 } }
+        setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'correctworker': cfg.correctqueue.maximum }
+
+        gov.once 'error', (err) ->
+          chai.expect(err).to.exist
+          chai.expect(err.message).to.contain cfg.wrongqueue.queue
+          console.log 'on err', err
+          done()
+        gov.once 'state', (state) ->
+          newState = state
+        gov.start()
+
+      it 'should still send state update', ->
+        chai.expect(newState).to.exist
+        chai.expect(newState).to.have.keys ['correctqueue', 'wrongqueue']
+        chai.expect(newState.correctqueue.new_workers).to.equal cfg.correctqueue.maximum
+
+      it 'should still scale the other workers', () ->
+        setWorkers.done()
+
