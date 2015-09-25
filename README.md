@@ -13,11 +13,12 @@ guv is written in Node.js, but can be used with workers in any programming langu
 
 ## Status
 
-*Experimental*
+*In production*
 
 * Supports RabbitMQ messaging system and Heroku workers
-* Simple algorithm for scaling to hit a deadline exists
-* Scaling algorithm does not compensate for worker boot time
+* Optional metric reporting to statuspage.io and New Relic
+* Uses simple algorithm for scaling to hit a deadline
+* Note: Scaling algorithm does not compensate for worker boot time
 * Used in production at [The Grid](https://thegrid.io), with [MsgFlo](https://github.com/msgflo/msgflo)
 
 ## Usage
