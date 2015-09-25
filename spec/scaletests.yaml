@@ -29,3 +29,52 @@
   state:
     messages: 1000
 
+# history based
+-
+  name: 'history of high load, then one low load'
+  expect: 'should not scale down'
+  result: null
+  config: |
+    '*': {min: 0, max: 4}
+    my: {p:60, deadline: 240}
+  role: 'my'
+  current: 4
+  state:
+    messages: 10
+  history: [ 4, 4, 0 ]
+-
+  name: 'history of high load, then many low load'
+  expect: 'should scale down'
+  result: 1
+  config: |
+    '*': {min: 0, max: 4}
+    my: {p:60, deadline: 240}
+  role: 'my'
+  current: 4
+  state:
+    messages: 10
+  history: [ 0, 0, 0 ]
+-
+  name: 'history of varying loads, then one low'
+  expect: 'should not scale down'
+  result: null
+  config: |
+    '*': {min: 0, max: 4}
+    my: {p:60, deadline: 240}
+  role: 'my'
+  current: 4
+  state:
+    messages: 10
+  history: [ 4, 1, 4, 2 ]
+-
+  name: 'history of medium loads, then one medium'
+  expect: 'should scale down a bit'
+  result: 2
+  config: |
+    '*': {min: 0, max: 4}
+    my: {p:60, deadline: 240}
+  role: 'my'
+  current: 3
+  state:
+    messages: 40
+  history: [ 1, 2, 1 ]

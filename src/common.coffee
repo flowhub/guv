@@ -19,3 +19,9 @@ exports.mapDictionaryAsync = (obj, func, callback) ->
       objresults[item.key] = item.returnvalue
     return callback err, objresults
 
+# returns true if predicate() is true for all items in sequence, else false
+exports.all = (sequence, predicate) ->
+  for i in [0...sequence.length]
+    p = predicate sequence[i]
+    return false if not p
+  return true

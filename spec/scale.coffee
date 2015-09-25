@@ -11,7 +11,8 @@ scaleTest = (test) ->
     it test.expect, () ->
       cfg = guv.config.parse test.config
       role = (test.role or '*')
-      actual = guv.scale.scale cfg[role], test.state.messages
+      actual = guv.scale.scaleWithHistory cfg[role], role, test.history, test.current, test.state.messages
+      actual = actual.next
       chai.expect(actual).to.equal test.result
 
 
@@ -23,4 +24,6 @@ describe 'Scaling', () ->
     console.log e
     throw e
   tests.forEach (test) ->
+    test.history = [] if not test.history
+    test.current = null if not test.current
     scaleTest test
