@@ -23,10 +23,9 @@ guv is free and open source software under the [MIT license](./LICENSE.md)
 
 *In production*
 
-* Supports RabbitMQ messaging system and Heroku workers
-* Optional metric reporting to statuspage.io and New Relic
-* Uses simple algorithm for scaling to hit a deadline
-* Note: Scaling algorithm does not compensate for worker boot time
+* Supports [RabbitMQ](https://www.rabbitmq.com/) messaging system and [Heroku](https://heroku.com/) workers
+* Uses simple proportional algorithm for scaling to maintain a quality-of-service deadline
+* Optional metric reporting to [statuspage.io](http://statuspage.io/) and [New Relic](http://newrelic.com)
 * Used in production at [The Grid](https://thegrid.io) since June 2015
 (with [MsgFlo](https://github.com/msgflo/msgflo))
 
