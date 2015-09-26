@@ -25,10 +25,13 @@ exports.Heroku =
     for name, qty of workers
       formation.push { process: name, quantity: qty }
 
+    payload =
+      updates: formation
     scope = require('nock')('https://api.heroku.com')
-      .patch("/apps/#{app}/formation", updates: formation)
+      .patch("/apps/#{app}/formation", payload)
       .reply(200)
 
+    debug 'registered Heroku', payload
     return scope
 
 exports.RabbitMQ =
@@ -44,6 +47,8 @@ exports.RabbitMQ =
     scope = require('nock')(r.scope)
       .get(r.path)
       .reply(r.status, r.response)
+
+    debug 'registered RabbitMQ', overrides
     return scope
 
 exports.StatusPageIO =
@@ -60,6 +65,7 @@ exports.StatusPageIO =
       .post("/pages/#{pageId}/metrics/#{metric}/data.json", matches)
       .reply(201)
 
+    debug 'registered StatusPageIO', metric, value
     return scope
 
 exports.startRecord = () ->
