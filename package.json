@@ -43,6 +43,7 @@
   "keywords": [],
   "bin": {
     "guv": "./bin/guv",
+    "guv-update-jobstats": "./bin/guv-update-jobstats",
     "guv-validate": "./bin/guv-validate"
   },
   "scripts": {

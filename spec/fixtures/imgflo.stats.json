@@ -1,0 +1,14 @@
+{
+  "imgflo_urgentworker": {
+    "average": 14.79529504240502,
+    "stddev": 48.96781037991199
+  },
+  "imgflo_backgroundworker": {
+    "average": 12.555282177397071,
+    "stddev": 39.945556522387285
+  },
+  "imgflo_api": {
+    "average": 0.00004229074889867841,
+    "stddev": 0.0006068673608807845
+  }
+}
