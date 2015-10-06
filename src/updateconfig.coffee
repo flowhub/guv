@@ -49,5 +49,6 @@ exports.main = main = () ->
     transformFile configfile, transform, (err) ->
       throw err if err
       console.log 'Updated', configfile
+      process.exit(0)
 
 main() if not module.parent
