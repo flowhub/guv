@@ -39,6 +39,9 @@ parse = (str) ->
   o = {} if not o
   return o
 
+serialize = (parsed) ->
+  return yaml.safeDump parsed
+
 configFormat = () ->
   varFormat =
     [ 'short', 'name', 'description', 'unit', 'default' ]
@@ -143,4 +146,5 @@ parseConfig = (str) ->
 
 exports.parse = parseConfig
 exports.parseOnly = parse
+exports.serialize = serialize
 exports.defaults = addDefaults
