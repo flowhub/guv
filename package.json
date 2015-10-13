@@ -20,7 +20,7 @@
     "amqp-stats": "0.0.14",
     "async": "1.4.2",
     "coffee-script": "1.10.0",
-    "commander": "2.8.1",
+    "commander": "2.9.0",
     "debug": "2.2.0",
     "gaussian": "1.0.0",
     "heroku-client": "2.2.2",
