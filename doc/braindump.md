@@ -2,7 +2,6 @@
 ## Tools TODO
 
 - Timing Heroku dyno boot time
-- Calculating mean, stddev from processing time stats. Output as config
 - Test whether processing times are normally distributed.
 Visual+[analytical test](https://en.wikipedia.org/wiki/Normality_test).
 - Calculate clusters/bins to separate multi-mode, non-normal data into

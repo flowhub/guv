@@ -150,15 +150,25 @@ And configure in your guv.yaml file:
 
 # Best practices
 
-### Measure the actual processing times of your jobs
-Calculate mean and standard deviations, and use these in the `guv` config.
+How to make the most out of guv.
 
-### Measure the actual end-to-end processing time for your jobs
-Monitor that they meet your target deadlines, and identify the load cases where they do not.
+### Measure the actual processing times of your jobs
+Calculate mean and standard deviations, and use these in the `guv` config. You can use the
+tool `guv-update-jobstats` to update your configuration, given a set of measurements of processing time.
+For instance, if you use MsgFlo and NewRelic, you can use
+[msgflo-jobstats-newrelic](https://github.com/msgflo/msgflo/blob/master/src/utils/newrelic.coffee) to
+extract these numbers.
+
+### Measure the actual end-to-end completion time for your jobs
+When seen from a user perspective, so it includes the time the job was queued
+(which is what guv tries to optimize). Monitor that they meet your target deadlines,
+and identify the load cases where they do not.
+Can be done by a 'started' timestamp when creating the job messages,
+a 'stopped' timestamp when completed.
 
 ### Keep boot times of your workers as low as possible
 Responsiveness to variable loads, especially sudden peaks is severely affected by boot time.
-Avoid doing expensive computations, lots of I/O or waiting for external services.
+Avoid doing expensive computations, lots of I/O or waiting for external services during boot.
 If neccesary do more during app build time, like creating caches or single-file builds.
 
 ### Separate out jobs with different processing time characterstics to different worker roles
@@ -173,4 +183,12 @@ should be done in separate queues, usually with a higher deadline.
 This ensures that such background work does not disrupt quality-of-service.
 
 ### Use only one primary input queue per worker
+The worker role (or 'dyno' in Heroku parlance) is the unit being scaled.
+So if one worker role consumes from multiple queues, one has to chose which one of these should 'drive' the scaling.
+If this is problematic, split up into multiple worker roles.
+Or if the CPU/disk/network usage of processing of one queue is affecting processing of another queue too much.
+
+There are currently no plans to consider multiple queues per role/worker when scaling.
+
+
 
