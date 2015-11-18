@@ -119,8 +119,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="541.38689"
-     inkscape:cy="523.74979"
+     inkscape:cx="298.52975"
+     inkscape:cy="238.0355"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false" />
@@ -132,7 +132,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -168,19 +168,19 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="754.87897"
-       y="992.13812"
+       x="722.98895"
+       y="996.92279"
        id="text4144"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4146"
-         x="754.87897"
-         y="992.13812"
-         style="font-size:15px">W: number of workers</tspan><tspan
+         x="722.98895"
+         y="996.92279"
+         style="font-size:22.5px">W: number of workers</tspan><tspan
          sodipodi:role="line"
-         x="754.87897"
-         y="1010.8881"
-         style="font-size:15px"
+         x="722.98895"
+         y="1025.0479"
+         style="font-size:22.5px"
          id="tspan4233">T_p: processing time</tspan></text>
     <rect
        style="opacity:1;fill:#f9f9f9;fill-opacity:1;fill-rule:nonzero;stroke:#322d48;stroke-width:0.82751232;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -285,23 +285,23 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="343.25815"
+       x="279.47867"
        y="996.92279"
        id="text4229"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4231"
-         x="343.25815"
+         x="279.47867"
          y="996.92279"
-         style="font-size:15px">N: number of messages in queue</tspan><tspan
+         style="font-size:22.5px">N: number of messages in queue</tspan><tspan
          sodipodi:role="line"
-         x="343.25815"
-         y="1015.6728"
-         style="font-size:15px"
+         x="279.47867"
+         y="1025.0479"
+         style="font-size:22.5px"
          id="tspan7099">T_q: Waiting time = (N*T_p/W)</tspan><tspan
          sodipodi:role="line"
-         x="343.25815"
-         y="1034.4227"
+         x="279.47867"
+         y="1053.1729"
          style="font-size:15px"
          id="tspan7101" /></text>
     <path
@@ -347,14 +347,15 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="220.21326"
+       x="213.12665"
        y="797.95667"
        id="text7105"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan7107"
-         x="220.21326"
-         y="797.95667">Job: created</tspan></text>
+         x="213.12665"
+         y="797.95667"
+         style="font-size:22.5px">Job: created</tspan></text>
     <rect
        ry="5.4999771"
        y="808.0434"
@@ -371,25 +372,27 @@
     <text
        sodipodi:linespacing="125%"
        id="text7223"
-       y="797.83948"
-       x="635.38593"
+       y="797.78088"
+       x="592.86591"
        style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        xml:space="preserve"><tspan
-         y="797.83948"
-         x="635.38593"
+         y="797.78088"
+         x="592.86591"
          id="tspan7225"
-         sodipodi:role="line">Job: processing</tspan></text>
+         sodipodi:role="line"
+         style="font-size:22.5px">Job: processing</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="919.23877"
-       y="787.73798"
+       x="880.26208"
+       y="797.78088"
        id="text7227"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan7229"
-         x="919.23877"
-         y="787.73798">Job: completed</tspan></text>
+         x="880.26208"
+         y="797.78088"
+         style="font-size:22.5px">Job: completed</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

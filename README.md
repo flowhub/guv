@@ -7,9 +7,9 @@ It automatically scales the numbers of workers based on number of pending jobs i
 > Variable loads? Don't know how many servers you need? Woken up just to start more servers?
 > Let robots do the tedious work for you!
 
-The number of workers is calculated to attempt that all jobs are completed within a specified *deadline*,
-that you decide as your desired quality-of-service.
-The scaling is based on estimates of the job processing time (mean, variance).
+The number of workers is calculated to attempt that all jobs are completed within a specified *deadline* (in seconds),
+that you decide as your desired quality-of-service for your users.
+The scaling is based on estimates of the job processing time (mean, variance), which you can calculate from metrics.
 
 guv is written in Node.js, but can be used with workers in any programming language.
 
@@ -147,6 +147,10 @@ And configure in your guv.yaml file:
     workerA:
       metric: 'my-statuspage-metric'
 
+
+# Scaling model
+
+![System model of scaling](./doc/system-model.png)
 
 # Best practices
 
