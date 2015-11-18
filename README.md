@@ -85,6 +85,8 @@ Each of the individual roles will inherit this configuration if they do not over
     textprocessing:
       max: 10
 
+Different `app` keys per role is supported, for services spanning multiple Heroku apps.
+
 guv attempts to scale workers to be within a `deadline`, based on estimates of `processing` time.
 To let it do a good job you should always specify the deadline, and *mean* processing time.
 
