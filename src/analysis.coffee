@@ -28,13 +28,16 @@ class ComputeTimer
   constructor: () ->
     @accumulated = {} # role -> seconds
     @previousTimes = {} # role -> timestamp
+    @previousWorkers = {} # role -> N workers
 
-  addState: (state, times) ->
+  addState: (state, times, workers) ->
     for role, s of state
       newTime = times[role]
+      actual = workers[role]
       #console.log 'ss', role, s.current_workers
       @accumulated[role] = 0 if not @accumulated[role]?
 
+      ###
       if @previousTimes[role]
         timeDiff = Math.ceil((newTime - @previousTimes[role])/(1000))
         increment = (timeDiff * s.current_workers)
@@ -46,7 +49,19 @@ class ComputeTimer
         change = Math.abs(s.new_workers - s.previous_workers)
         @accumulated[role] += bootTime * change
 
-      @previousTimes[role] = newTime
+        if actual? and actual != s.current_workers
+          console.log 'no match', role, actual, s.current_workers, s.current_workers-actual
+        else
+          #console.log 'match'
+          null
+      ###
+      if actual
+        if @previousTimes[role] and @previousWorkers[role]
+          timeDiff = Math.ceil((newTime - @previousTimes[role])/(1000))
+          increment = (timeDiff * @previousWorkers[role])
+          @accumulated[role] += increment
+        @previousTimes[role] = newTime
+        @previousWorkers[role] = actual
     
 arrayEquals = (a, b) ->
   A = a.toString()
@@ -73,14 +88,18 @@ queueDataFromEvents = (cfg, events) ->
     if arrayEquals haveRoles, allRoles
       queues = {}
       timestamps = {}
+      workers = {}
       for role, v of lastByRole
         queue = cfg[role].queue
         queues[queue] = v.jobs
         timestamps[role] = v.timestamp
+        workers[role] = v.workers
+
       #console.log 'full', queues, lastByRole
       data.push
         queues: queues
         timestamps: timestamps
+        workers: workers
       lastByRole = {}
 
   return data
@@ -120,7 +139,7 @@ main = () ->
   for d in queueData
     try
       s = governor.nextState null, d.queues
-      compute.addState s, d.timestamps # TODO: keep timestamp state internally?
+      compute.addState s, d.timestamps, d.workers # TODO: keep timestamp state internally?
     catch e
       console.log d.queues, s?, e
       console.log governor.history
