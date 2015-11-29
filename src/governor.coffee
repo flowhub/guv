@@ -57,13 +57,6 @@ realizeState = (cfg, state, callback) ->
     return callback err, state if err
     return callback null, state
 
-checkAndScale = (cfg, history, callback) ->
-  rabbitmq.getStats cfg['*'], (err, queues) ->
-    return callback err if err
-
-    state = nextState cfg, history, queues
-    realizeState cfg, state, callback
-
 class Governor extends EventEmitter
   constructor: (c) ->
     @config = c
@@ -84,13 +77,18 @@ class Governor extends EventEmitter
   stop: () ->
     clearInterval @interval if @interval
 
+  nextState: (err, queues) ->
+    state = nextState @config, @history, queues
+    @history.push state
+    @history = @history.slice Math.max(@history.length-@historysize, 0)
+    debug 'history length', @history.length
+    return state
+
   runOnceInternal: (callback) ->
     try
-      checkAndScale @config, @history, (err, state) =>
-        @history.push state
-        @history = @history.slice Math.max(@history.length-@historysize, 0)
-        debug 'history length', @history.length
-        return callback err, state
+      rabbitmq.getStats @config['*'], (err, queues) =>
+        state = @nextState err, queues
+        realizeState @config, state, callback
     catch e
       return callback e
 
