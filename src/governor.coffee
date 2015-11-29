@@ -32,6 +32,7 @@ nextState = (cfg, window, queues) ->
     else
       history = extractHistory window, name, 'estimated_workers'
       currentWorkers = extractHistory(window, name, 'current_workers')[history.length-1]
+      s.previous_workers = currentWorkers
       workers = scale.scaleWithHistory role, name, history, currentWorkers, s.current_jobs
       s.estimated_workers = workers.estimate
       if workers.next?
