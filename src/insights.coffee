@@ -45,7 +45,7 @@ getScaleEvents = (options, callback) ->
   queries = []
   end = new Date() # TODO: make configurable?
   start = new Date(end)
-  start.setTime(start.getTime()-options.period*60*60*1000)
+  start.setTime(start.getTime()-options.period*24*60*60*1000)
   queries = getTimeIntervals start, end, options.queryInterval
 
   # execute queries
