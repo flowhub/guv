@@ -30,15 +30,22 @@ class ComputeTimer
     @previousTimes = {} # role -> timestamp
 
   addState: (state, times) ->
-    # TODO: round up to full minutes? since after scaling down, we will presumably pay for several seconds more?
     for role, s of state
       newTime = times[role]
       #console.log 'ss', role, s.current_workers
+      @accumulated[role] = 0 if not @accumulated[role]?
+
       if @previousTimes[role]
-        timeDiff = Math.ceil((newTime - @previousTimes[role])/1000)
+        timeDiff = Math.ceil((newTime - @previousTimes[role])/(1000))
         increment = (timeDiff * s.current_workers)
-        @accumulated[role] = 0 if not @accumulated[role]?
         @accumulated[role] += increment
+      if s.new_workers and s.previous_workers
+        # compensate for boot-up/shutdown time?
+        bootTime = 60
+        #console.log 'adding', s.new_workers - s.previous_workers
+        change = Math.abs(s.new_workers - s.previous_workers)
+        @accumulated[role] += bootTime * change
+
       @previousTimes[role] = newTime
     
 arrayEquals = (a, b) ->
@@ -104,7 +111,7 @@ main = () ->
   #console.log governor.config
 
   events = JSON.parse(fs.readFileSync(eventFile))
-  console.log "got #{events.length} events"
+  console.log "got #{events.length} events\n"
 
   # XXX: have to combine all events at a given timestamp, to give queue data for everything at once
   # if history was done per role instead of globally, this would not be neccesary
@@ -122,10 +129,11 @@ main = () ->
   types = {}
   for role, val of cfg
     types[role] = val.dynosize
+#  console.log 'dyno sizes', types
 
-  console.log 'compute seconds', compute.accumulated
+#  console.log 'compute seconds', compute.accumulated
   costs = calculateCosts compute.accumulated, types
-  console.log 'costs', costs
+#  console.log 'costs', costs
   total = 0
   for role, v of costs
     console.log "#{role}: #{v.toFixed()} USD"
