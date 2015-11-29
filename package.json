@@ -26,6 +26,7 @@
     "heroku-client": "~2.2.2",
     "js-yaml": "~3.4.6",
     "newrelic": "~1.22.1",
+    "node-insights": "^1.0.15",
     "request": "~2.64.0",
     "simple-statistics": "~0.9.2",
     "uuid": "~2.0.1"
@@ -44,6 +45,7 @@
   "bin": {
     "guv": "./bin/guv",
     "guv-update-jobstats": "./bin/guv-update-jobstats",
+    "guv-newrelic-events": "./bin/guv-newrelic-events",
     "guv-validate": "./bin/guv-validate"
   },
   "scripts": {
