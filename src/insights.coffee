@@ -41,7 +41,7 @@ getScaleEvents = (options, callback) ->
   # OFFSET support also seems pretty broken: offset+limit cannot be more than 1000
   # so we subdivide our desired period into many small chunks, (hopefully) smaller than this limit
 
-  # build subqueries  
+  # build subqueries
   queries = []
   end = new Date() # TODO: make configurable?
   start = new Date(end)
