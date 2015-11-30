@@ -78,3 +78,27 @@
   state:
     messages: 40
   history: [ 1, 2, 1 ]
+-
+  name: 'impossible config'
+  expect: 'should scale up to max'
+  result: 4
+  config: |
+    '*': {min: 0, max: 4}
+    my: { processing: 60, deadline: 61}
+  role: 'my'
+  current: 0
+  state:
+    messages: 40
+  history: [ 1, 2, 1 ]
+-
+  name: 'unrealistic config'
+  expect: 'should scale up to max'
+  result: 4
+  config: |
+    '*': {min: 0, max: 4}
+    my: { processing: 25, stddev: 12, deadline: 50}
+  role: 'my'
+  current: 0
+  state:
+    messages: 40
+  history: [ 1, 2, 1 ]

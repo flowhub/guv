@@ -26,7 +26,8 @@ calculateTarget = (config) ->
 
   # Shift the point up till hits at the specified deadline
   # XXX: Is it a safe assumption that variance is same for all
-  return config.deadline-distance
+  target = config.deadline-distance
+  return target
 
 
 jobsInDeadline = (config) ->
