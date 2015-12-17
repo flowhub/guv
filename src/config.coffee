@@ -10,10 +10,9 @@ fs = require 'fs'
 path = require 'path'
 
 calculateTarget = (config) ->
-
   # Calculate the point which the process completes
   # the desired percentage of jobs within
-  debug 'calculate target', config
+  debug 'calculate target for', config.processing, config.stddev, config.deadline
 
   tolerance = (100-config.percentile)/100
   mean = config.processing
@@ -21,8 +20,6 @@ calculateTarget = (config) ->
   d = gaussian mean, variance
   ppf = -d.ppf(tolerance)
   distance = mean+ppf
-
-  # TODO: throw Error on impossible config
 
   # Shift the point up till hits at the specified deadline
   # XXX: Is it a safe assumption that variance is same for all
@@ -99,11 +96,18 @@ addDefaults = (format, role, c) ->
   c.statuspage = process.env['STATUSPAGE_ID'] if not c.statuspage
   c.broker = process.env['GUV_BROKER'] if not c.broker
   c.broker = process.env['CLOUDAMQP_URL'] if not c.broker
+  c.errors = [] if not c.errors
   if role != '*'
     c.worker = role if not c.worker
     c.queue = role if not c.queue
     c.stddev = c.processing*0.5 if not c.stddev
     c.target = calculateTarget c if not c.target
+
+    if c.target <= c.processing
+      e = new Error "Target #{c.target.toFixed(2)}s is lower than processing time #{c.processing.toFixed(2)}s. Attempted deadline #{c.deadline}s."
+      debug 'target error', e
+      c.errors.push e # for later reporting
+      c.target = c.processing+0.01 # do our best
 
   return c
 
