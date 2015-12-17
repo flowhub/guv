@@ -59,4 +59,9 @@
       worker: 'share'
       queue: 'share'
   valid: true
-
+-
+  name: 'unrealistic-deadline'
+  input: |
+    '*': {min: 0, max: 4}
+    failing: { processing: 25, stddev: 12, deadline: 50}
+  invalid: 'is lower than processing time 25'
