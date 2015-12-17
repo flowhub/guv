@@ -29,10 +29,9 @@ validate = (options) ->
   cfg = config.parse options.config
 
   errors = []
-  for role, config of cfg
-    continue if role == '*'
-    for e in config.errors
-      debug 'role err', role, e
+  for role, c of cfg
+    for e in c.errors
+      debug 'config error', role, e
       errors.push "\t#{role}: #{e.message}\n"
   if errors.length
     throw new Error "#{errors.length} config errors:\n #{errors}"
