@@ -9,12 +9,16 @@ fs = require 'fs'
 config = require './config'
 
 parse = (argv) ->
+  addAllowKey = (key, list) ->
+    list.push key
+    return list
+
   program
     .option('-c --config <string>', 'Configuration string', String, '')
     .option('-f --file <FILE.guv>', 'Configuration file', String, '')
+    .option('--allow-key', 'Non-standard config key to allow', addAllowKey, [])
     .parse(argv)
 
-# TODO: validate that variables used are known
 # TODO: validate that config is not  impossible to realise
 
 normalize = (options) ->
@@ -27,12 +31,17 @@ validate = (options) ->
   throw new Error 'Configuration is empty' if not options.config
 
   cfg = config.parse options.config
+  validationErrors = config.validate options.config, { allowKeys: options.allowKey }
 
   errors = []
   for role, c of cfg
     for e in c.errors
       debug 'config error', role, e
       errors.push "\t#{role}: #{e.message}\n"
+
+  for e in validationErrors
+    errors.push "\t#{e.message}\n"
+
   if errors.length
     throw new Error "#{errors.length} config errors:\n #{errors}"
 

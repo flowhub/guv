@@ -65,3 +65,13 @@
     '*': {min: 0, max: 4}
     failing: { processing: 25, stddev: 12, deadline: 50}
   invalid: 'is lower than processing time 25'
+-
+  name: 'missing-space-after:' # is interpreted as key with colon in it, and undefined/null value
+  input: |
+    setqueuerole: { processing: 25, queue:notdefault }
+  invalid: 'unknown property'
+-
+  name: 'config with typo in property' # should have two ss in processing
+  input: |
+    typorole: { procesing: 25 }
+  invalid: 'unknown property'

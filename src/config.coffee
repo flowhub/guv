@@ -9,7 +9,9 @@ yaml = require 'js-yaml'
 fs = require 'fs'
 path = require 'path'
 
-roleSchema = require '../schema/roleconfig.json'
+schemas =
+  roleconfig: require '../schema/roleconfig.json'
+  config: require '../schema/config.json'
 
 calculateTarget = (config) ->
   # Calculate the point which the process completes
@@ -49,7 +51,7 @@ configFormat = () ->
   format =
     shortoptions: {}
     options: {}
-  for name, value of roleSchema.properties
+  for name, value of schemas.roleconfig.properties
     o = clone value
     throw new Error "Missing type for config property #{name}" if not o.type
     o.name = name
@@ -120,6 +122,35 @@ parseConfig = (str) ->
 
   return config
 
+validateConfig = (str, options) ->
+  tv4 = require 'tv4'
+  tv4.addSchema schemas.roleconfig.id, schemas.roleconfig
+  tv4.addSchema schemas.config.id, schemas.config
+  parsed = parse str
+
+  # Lookup canonical long name from short
+  # XXX: a bit hacky way to avoid duplicate definitions in the JSON schema
+  format = configFormat()
+  for role, vars of parsed
+    for name, val of vars
+      if format.shortoptions[name]?
+        longname = format.shortoptions[name].name
+        vars[longname] = val
+        delete vars[name]
+
+  checkRecursive = false
+  banUnknownProperties = true
+  result = tv4.validateMultiple parsed, schemas.config.id, checkRecursive, banUnknownProperties
+  errors = []
+  for e in result.errors
+    role = e.dataPath.split('/')[1]
+    property = e.dataPath.split('/')[2]
+    err = new Error "#{e.message} for #{e.dataPath}"
+    errors.push err
+
+  return errors
+
+exports.validate = validateConfig
 exports.parse = parseConfig
 exports.parseOnly = parse
 exports.serialize = serialize
