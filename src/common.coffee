@@ -25,3 +25,14 @@ exports.all = (sequence, predicate) ->
     p = predicate sequence[i]
     return false if not p
   return true
+
+exports.arraymax = (sequence, predicate) ->
+  max = null
+  for i in [0...sequence.length]
+    val = sequence[i]
+    if not max?
+      max = val
+    else
+      if val > max
+        max = val
+  return max

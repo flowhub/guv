@@ -49,10 +49,19 @@ scaleWithHistory = (config, name, history, currentWorkers, currentMessages) ->
     # scaling down, only act when we're reasonably confident we don't need.
     # This is due to the non-trivial time cost of scaling down/up workers
     #
-    # require current prediciton to be lower than everything in current history window
-    shouldScale = common.all(history, (e) -> return e <= workers)
-    ret.next = workers if shouldScale
-    debug 'scaling down?', name, shouldScale, currentWorkers, workers
+    # require next state to be lower than everything in current history window
+    hysteresisMin = common.arraymax history
+    debug 'scaling down?', name, currentWorkers, workers, hysteresisMin
+    if workers < hysteresisMin
+      # scaling down limited by hysteresis
+      if hysteresisMin < currentWorkers
+        debug 'scaling down to hysteresis min'
+        ret.next = hysteresisMin
+    else
+      # not limited by hysteresis
+      debug 'scaling to estimate'
+      ret.next = workers
+
   else if workers == currentWorkers
     debug 'staying with same'
   else
