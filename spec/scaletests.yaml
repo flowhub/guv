@@ -79,6 +79,18 @@
     messages: 40
   history: [ 1, 2, 1 ]
 -
+  name: 'history of decreasing loads, then nothing'
+  expect: 'should scale down a bit'
+  config: |
+    '*': {min: 0, max: 4}
+    my: {p:60, deadline: 240}
+  role: 'my'
+  current: 12
+  state:
+    messages: 0
+  history: [ 10, 9, 8 ]
+  result: 10
+-
   name: 'impossible config'
   expect: 'should scale up to max'
   result: 4
