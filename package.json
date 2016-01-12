@@ -24,7 +24,7 @@
     "debug": "~2.2.0",
     "gaussian": "~1.0.0",
     "heroku-client": "~2.2.2",
-    "js-yaml": "~3.4.6",
+    "js-yaml": "~3.5.2",
     "newrelic": "~1.22.1",
     "node-insights": "^1.0.15",
     "request": "~2.64.0",
