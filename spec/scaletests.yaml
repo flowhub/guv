@@ -114,3 +114,44 @@
   state:
     messages: 40
   history: [ 1, 2, 1 ]
+-
+  name: 'medium load, concurrency = 1'
+  expect: 'should start some workers'
+  result: 11
+  role: 'def'
+  config: |
+    '*': {max: 40}
+    def: { concurrency: 1 }
+  state:
+    messages: 40
+-
+  name: 'medium load, concurrency = 3'
+  expect: 'should start ca 1/3 workers of concurrency=1'
+  result: 4
+  role: 'def'
+  config: |
+    '*': {max: 40}
+    def: { concurrency: 3 }
+  state:
+    messages: 40
+-
+  name: 'low load, concurrency = 1'
+  expect: 'should start few workers'
+  result: 1
+  role: 'def'
+  config: |
+    '*': {max: 40, deadline: 90}
+    def: { concurrency: 1 }
+  state:
+    messages: 5
+-
+  name: 'low load, concurrency = 3'
+  expect: 'should start same workers as concurrency=1'
+  result: 1
+  role: 'def'
+  config: |
+    '*': {max: 40, deadline: 90}
+    def: { concurrency: 3 }
+  state:
+    messages: 5
+

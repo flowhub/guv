@@ -50,6 +50,7 @@ configFormat = () ->
     [ null, 'stddev', 'Standard deviation (1σ) of job processing time: 68% completed within -+ this.', 'seconds', '50% of mean processing time' ]
     [ 'd', 'deadline', 'Time practically all jobs should be completed within.', 'seconds', 60.0 ]
     [ null, 'boot', 'Mean boot time. From adding worker to processing jobs', 'seconds', 30.0 ]
+    [ null, 'concurrency', 'Number of concurrent jobs the worker processes (prefetch in AMQP)', 'number', 1 ]
 
     # worker limits
     [ 'max', 'maximum', 'Maximum amount of workers', 'N workers', 5 ]

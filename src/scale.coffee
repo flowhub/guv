@@ -8,7 +8,8 @@ common = require './common'
 # TODO: account for dyno bootup time
 # Proportional scaling model
 proportional = (config, queueLength) ->
-  waitingTime = queueLength * config.processing
+  # up to N concurrent jobs process in time P, but once N>C time becomes 2P, and so on
+  waitingTime = Math.ceil(queueLength/config.concurrency)*config.processing
   availableTime = config.target - config.processing
   return waitingTime/availableTime
 
