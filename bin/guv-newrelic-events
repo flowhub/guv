@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 require('coffee-script/register');
 insights = require('../src/insights');
 insights.main();
