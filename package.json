@@ -46,7 +46,7 @@
     "guv": "./bin/guv",
     "guv-update-jobstats": "./bin/guv-update-jobstats",
     "guv-newrelic-events": "./bin/guv-newrelic-events",
-    "guv-heroku-startuptime": "./bin/guv-heroku-startuptime",
+    "guv-heroku-workerstats": "./bin/guv-heroku-workerstats",
     "guv-validate": "./bin/guv-validate"
   },
   "scripts": {
