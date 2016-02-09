@@ -160,6 +160,12 @@ analyzeStartups = (filename, callback) ->
     results = state.startups.map (s) -> s.duration
     return callback null, results
 
+# FIXME: Rename to guv-heroku-workerstats
+# TODO: add a guv-update-jobstats tool
+# TODO: allow to separate between (module) loading time, and startup time
+# TODO: callculate whole delay from scaling to up by default
+# TODO: allow to calculate shutdown time
+# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdown
 exports.startuptime_main = () ->
   program = require 'commander'
 
