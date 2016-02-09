@@ -6,6 +6,7 @@ debug = require('debug')('guv:heroku')
 Heroku = require 'heroku-client'
 child = require 'child_process'
 async = require 'async'
+statistics = require 'simple-statistics'
 
 exports.dryrun = false
 
@@ -103,7 +104,7 @@ eventsFromLog = (logdata) ->
       events.push { type: 'process-stopping', time: timestamp, dyno: dyno, msg: info }
 
     else
-      #console.log info
+      #debug 'unknown-logline', info
   return events
 
 # Basically a finite state machine, one per dyno
@@ -112,6 +113,7 @@ applyEvent = (state, event) ->
   state.lasttransition = {} if not state.lasttransition # 'dyno.N' -> lastTransition: Event }
   state.dynostate = {} if not state.dynostate # 'dyno.N' -> DynoState
   state.startups = [] if not state.startups
+  state.shutdowns = [] if not state.shutdowns
 
 
   # TODO: reject invalid transitions.\
@@ -121,11 +123,9 @@ applyEvent = (state, event) ->
     #console.log event.dyno, event.type
     switch event.type
       when 'process-starting'
-        #console.log 'starting', event.dyno
         state.dynostate[event.dyno] = 'starting'
         state.lasttransition[event.dyno] = event
       when 'process-started'
-        #console.log 'started', event.dyno
         if state.lasttransition[event.dyno] and state.dynostate[event.dyno] == 'starting'
           s =
             dyno: event.dyno
@@ -137,12 +137,32 @@ applyEvent = (state, event) ->
           state.dynostate[event.dyno] = 'started'
           state.lasttransition[event.dyno] = event
         else
-          console.log 'invalid transition', event.type, state.dynostate[event.dyno]
-      when 'starting->up' then null
+          debug 'invalid transition', event.type, state.dynostate[event.dyno]
 
+      when 'starting->up' then null
       when 'up->down' then null
-      when 'process-stopping' then null
-      when 'process-exited' then null
+
+      when 'process-stopping'
+        if state.dynostate[event.dyno] == 'started'
+          state.dynostate[event.dyno] = 'stopping'
+          state.lasttransition[event.dyno] = event
+        else
+          debug 'invalid transition', event.type, state.dynostate[event.dyno]
+
+      when 'process-exited'
+        if state.dynostate[event.dyno] == 'stopping' and state.lasttransition[event.dyno]
+          s =
+            dyno: event.dyno
+            start: state.lasttransition[event.dyno]
+            end: event
+          s.duration = s.end.time.getTime() - s.start.time.getTime()
+          state.shutdowns.push s
+
+          state.dynostate[event.dyno] = 'exited'
+          state.lasttransition[event.dyno] = event
+        else
+          debug 'invalid transition', event.type, state.dynostate[event.dyno]
+
   else
     # FIXME: handle. Maybe outside/before. Particularly scale-to?
 
@@ -157,7 +177,16 @@ analyzeStartups = (filename, callback) ->
     #results = events.map (e) -> "#{e.dyno or ''} #{e.type}"
     for e in events
       applyEvent state, e
-    results = state.startups.map (s) -> s.duration
+
+    starts = state.startups.map (s) -> s.duration/1000
+    stops = state.shutdowns.map (s) -> s.duration/1000
+    results =
+      startup: statistics.mean starts
+      startup_stddev: statistics.standard_deviation starts
+      startup_length: starts.length
+      shutdown: statistics.mean stops
+      shutdown_stddev: statistics.standard_deviation stops
+      shutdown_length: stops.length
     return callback null, results
 
 # FIXME: Rename to guv-heroku-workerstats
@@ -165,7 +194,7 @@ analyzeStartups = (filename, callback) ->
 # TODO: allow to separate between (module) loading time, and startup time
 # TODO: callculate whole delay from scaling to up by default
 # TODO: allow to calculate shutdown time
-# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdown
+# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdownl
 exports.startuptime_main = () ->
   program = require 'commander'
 
