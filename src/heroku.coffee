@@ -48,7 +48,7 @@ startsWith = (str, prefix) ->
   return str.indexOf(prefix) == 0
 
 
-eventsFromLog = (logdata) ->
+eventsFromLog = (logdata, started) ->
   events = []
 
   # timestamp, target (app|heroku), action
@@ -95,7 +95,7 @@ eventsFromLog = (logdata) ->
 
     else if startsWith info, 'Starting process with command'
       events.push { type: 'process-starting', time: timestamp, dyno: dyno, msg: info }
-    else if startsWith info, 'noflo-runtime-msgflo started'
+    else if started info
       events.push { type: 'process-started', time: timestamp, dyno: dyno, msg: info }
 
     else if startsWith info, 'Process exited with status'
@@ -115,8 +115,6 @@ applyEvent = (state, event) ->
   state.startups = [] if not state.startups
   state.shutdowns = [] if not state.shutdowns
 
-
-  # TODO: reject invalid transitions.\
   # Note, they can happen initially because we don't generally know initial state
   if event.dyno
     # Dyno-specific events
@@ -167,13 +165,13 @@ applyEvent = (state, event) ->
     # FIXME: handle. Maybe outside/before. Particularly scale-to?
 
 
-analyzeStartups = (filename, callback) ->
+analyzeStartups = (filename, started, callback) ->
   fs = require 'fs'
 
   state = {}
   fs.readFile filename, {encoding: 'utf-8'}, (err, contents) ->
     return callback err if err
-    events = eventsFromLog contents
+    events = eventsFromLog contents, started
     #results = events.map (e) -> "#{e.dyno or ''} #{e.type}"
     for e in events
       applyEvent state, e
@@ -189,12 +187,10 @@ analyzeStartups = (filename, callback) ->
       shutdown_length: stops.length
     return callback null, results
 
-# FIXME: Rename to guv-heroku-workerstats
 # TODO: add a guv-update-jobstats tool
 # TODO: allow to separate between (module) loading time, and startup time
-# TODO: callculate whole delay from scaling to up by default
-# TODO: allow to calculate shutdown time
-# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdownl
+# TODO: calculate whole delay from scaling to up by default, and scaling down to down
+# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdown
 exports.startuptime_main = () ->
   program = require 'commander'
 
@@ -208,7 +204,13 @@ exports.startuptime_main = () ->
       filename = f
     .parse(process.argv)
 
-  analyzeStartups filename, (err, res) ->
+  # FIXME: make configurable
+  started = (info) ->
+    return true if startsWith info, 'noflo-runtime-msgflo started' 
+    return true if info.indexOf('started using broker') != -1
+    return false
+
+  analyzeStartups filename, started, (err, res) ->
     throw err if err
     console.log res
 
