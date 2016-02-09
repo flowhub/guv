@@ -187,29 +187,26 @@ analyzeStartups = (filename, started, callback) ->
       shutdown_length: stops.length
     return callback null, results
 
-# TODO: add a guv-update-jobstats tool
-# TODO: allow to separate between (module) loading time, and startup time
 # TODO: calculate whole delay from scaling to up by default, and scaling down to down
-# TODO: add tool for calculating 'waste' percentage. Ratio of time spent processing versus startup+shutdown
+# TODO: allow to separate between (module) loading time, and startup time
+# TODO: add a guv-update-jobstats tool, would modify 'boot' and 'shutdown' values in config
+# TODO: add tool for calculating scaling 'waste'. Ratio of time spent processing vs startup+shutdown
+# MAYBE: allow specifying subsets in time?
+# MAYBE: allow ignoring certain dynos?
 exports.startuptime_main = () ->
   program = require 'commander'
 
   filename = null
-
-# TODO: allow specifying subsets in time?
   program
     .arguments('<heroku.log>')
-#    .option('-f --file <FILE.guv>', 'Configuration file', String, '')
+    .option('--started <regexp>', 'Regular expression matching output sent by process when started', String, 'noflo-runtime-msgflo started')
     .action (f, env) ->
       filename = f
     .parse(process.argv)
+  program.started = new RegExp program.started
 
-  # FIXME: make configurable
   started = (info) ->
-    return true if startsWith info, 'noflo-runtime-msgflo started' 
-    return true if info.indexOf('started using broker') != -1
-    return false
-
+    return program.started.test info
   analyzeStartups filename, started, (err, res) ->
     throw err if err
     console.log res
