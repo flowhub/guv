@@ -1,4 +1,10 @@
 
+# guv 0.1.11
+
+Released: February 10, 2016
+
+* Add tool `guv-heroku-workerstats`, for calculating startup/shutdown times of workers
+
 # guv 0.1.9
 
 Released: Feburary 2, 2016.

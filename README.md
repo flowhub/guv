@@ -177,6 +177,8 @@ Responsiveness to variable loads, especially sudden peaks is severely affected b
 Avoid doing expensive computations, lots of I/O or waiting for external services during boot.
 If neccesary do more during app build time, like creating caches or single-file builds.
 
+To measure boot times, you can use the `guv-heroku-workerstats` tool.
+
 ### Separate out jobs with different processing time characterstics to different worker roles
 If your job processing time has several clear peaks instead of one in the processing time histogram,
 determine what the different cases are and use dedicated worker roles.
