@@ -23,7 +23,7 @@
     "commander": "~2.8.1",
     "debug": "~2.2.0",
     "gaussian": "~1.0.0",
-    "heroku-client": "~2.2.2",
+    "heroku-client": "~2.4.1",
     "js-yaml": "~3.5.2",
     "newrelic": "~1.22.1",
     "node-insights": "^1.0.15",
