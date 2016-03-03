@@ -193,10 +193,28 @@ This ensures that such background work does not disrupt quality-of-service.
 ### Use only one primary input queue per worker
 The worker role (or 'dyno' in Heroku parlance) is the unit being scaled.
 So if one worker role consumes from multiple queues, one has to chose which one of these should 'drive' the scaling.
-If this is problematic, split up into multiple worker roles.
+Load caused on the other queue will influence this, but will not be taken into account.
+
+If a single input queue is problematic, split up into multiple worker roles.
 Or if the CPU/disk/network usage of processing of one queue is affecting processing of another queue too much.
 
 There are currently no plans to consider multiple queues per role/worker when scaling.
 
+### Jobs should be small
+The more *independent* jobs work can be split into, the more parallizable the load will be,
+and the lower the acheivable latency will be.
+However if the job is extremely small, the message-passing overhead may start to become significant.
 
+As a rough guideline, job processing should ideally be on the order of 1-10 seconds.
+
+### Process jobs concurrently
+AMQP allows specifying `prefetch`, which is how many messages (jobs) a consumer accepts at the same time.
+This can help ensure that the CPU core(s) of the worker are fully saturated.
+
+For loads which have significant time spend on I/O this can increase efficiency at lot.
+Communicating with external network services, or reading/writing files from disk.
+
+For a mixed CPU/IO-bound load a prefetch of around `2*cpucores` is a good baseline.
+For primarily networked IO, try `10*cpucores`.
+Make sure to specify `concurrency` in your guv config, and that the workers have enough memory.
 
