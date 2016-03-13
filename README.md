@@ -115,7 +115,8 @@ The name of the `worker` and `queue` defaults to the `role name`, but can be ove
 For list of all supported configuration variables see [./src/config.coffee](./src/config.coffee).
 Many of the commonly used ones have short and long-form names.
 
-guv configuration files by convention use the extension *.guv.yaml*, for instance `autoscale.guv.yaml` or `myproject.guv.yaml`.
+guv configuration files by convention use the extension *.guv.yaml*,
+for instance `autoscale.guv.yaml` or `myproject.guv.yaml`.
 
 # Metrics support
 
@@ -179,7 +180,7 @@ If neccesary do more during app build time, like creating caches or single-file 
 
 To measure boot times, you can use the `guv-heroku-workerstats` tool.
 
-### Separate out jobs with different processing time characterstics to different worker roles
+### Separate jobs with different processing time to different roles
 If your job processing time has several clear peaks instead of one in the processing time histogram,
 determine what the different cases are and use dedicated worker roles.
 If your job processing time depends on the size of the job payload, implement an estimation
