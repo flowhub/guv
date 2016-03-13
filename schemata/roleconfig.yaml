@@ -39,7 +39,7 @@ properties:
     type: string
     description: "Heroku dyno size used for the worker"
     example: 'perf-m'
-    default: '1X'
+    default: 'standard-1x'
 
   # worker limits
   minimum:
