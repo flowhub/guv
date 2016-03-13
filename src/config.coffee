@@ -68,6 +68,7 @@ addDefaults = (format, role, c) ->
   # TODO: have a way of declaring these functions in JSON schema?
   c.statuspage = process.env['STATUSPAGE_ID'] if not c.statuspage
   c.broker = process.env['GUV_BROKER'] if not c.broker
+  c.app = process.env['GUV_APP'] if not c.app
   c.broker = process.env['CLOUDAMQP_URL'] if not c.broker
   c.errors = [] # avoid shared ref
   if role != '*'
