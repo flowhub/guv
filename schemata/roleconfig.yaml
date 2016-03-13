@@ -35,6 +35,11 @@ properties:
     description: 'Number of concurrent jobs the worker processes (prefetch in AMQP)'
     default: 1.0
     unit: 'jobs'
+  dynosize:
+    type: string
+    description: "Heroku dyno size used for the worker"
+    example: 'perf-m'
+    default: '1X'
 
   # worker limits
   minimum:
