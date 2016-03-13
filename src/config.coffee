@@ -129,14 +129,19 @@ validateConfig = (str, options) ->
   tv4.addSchema schemas.config.id, schemas.config
   parsed = parse str
 
-  # Lookup canonical long name from short
-  # XXX: a bit hacky way to avoid duplicate definitions in the JSON schema
+  options.allowKeys = [] if not options.allowKeys
+
   format = configFormat()
   for role, vars of parsed
     for name, val of vars
+      # Lookup canonical long name from short
+      # XXX: a bit hacky way to avoid duplicate definitions in the JSON schema
       if format.shortoptions[name]?
         longname = format.shortoptions[name].name
         vars[longname] = val
+        delete vars[name]
+
+      if name in options.allowKeys
         delete vars[name]
 
   checkRecursive = false

@@ -16,10 +16,9 @@ parse = (argv) ->
   program
     .option('-c --config <string>', 'Configuration string', String, '')
     .option('-f --file <FILE.guv>', 'Configuration file', String, '')
-    .option('--allow-key', 'Non-standard config key to allow', addAllowKey, [])
+    .option('--allow-key <configkey>', 'Non-standard config key to allow', addAllowKey, [])
     .parse(argv)
 
-# TODO: validate that config is not  impossible to realise
 
 normalize = (options) ->
   options.config = process.env['GUV_CONFIG'] if not options.config

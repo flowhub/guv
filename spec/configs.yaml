@@ -76,3 +76,9 @@
   input: |
     typorole: { procesing: 25 }
   invalid: 'unknown property'
+-
+  name: 'config with unknown property in --allow-key'
+  input: |
+    extrarole: { deadline: 330.33, extrakey: 25 }
+  valid: true
+  validationOptions: '--allow-key extrakey'

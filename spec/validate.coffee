@@ -6,10 +6,10 @@ fs = require 'fs'
 path = require 'path'
 { exec } = require 'child_process'
 
-guv_validate = (configstr, callback) ->
+guv_validate = (configstr, extra, callback) ->
   node = 'node'
   prog = path.join __dirname, '..', 'bin', 'guv-validate'
-  cmd = "#{node} #{prog} --config \"#{configstr}\""
+  cmd = "#{node} #{prog} --config \"#{configstr}\" #{extra}"
   return exec cmd, callback
 
 validityTest = (test) ->
@@ -28,7 +28,8 @@ validityTest = (test) ->
     stderr = null
     stdout = null
     before (done) ->
-      guv_validate test.input, (e, stdo, stde) ->
+      extra = test.validationOptions or ""
+      guv_validate test.input, extra, (e, stdo, stde) ->
         err = e
         stderr = stde
         stdout = stdo
