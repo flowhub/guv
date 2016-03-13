@@ -156,6 +156,27 @@ validateConfig = (str, options) ->
 
   return errors
 
+estimateRates = (cfg) ->
+  rates = {}
+  for role, c of cfg
+    continue if role == '*'
+    rate = c.concurrency * c.maximum * (1 / c.processing)
+    rates[role] = rate
+
+  return rates
+
+main = () ->
+  p = process.argv[2]
+  f = fs.readFileSync p, 'utf-8'
+  parsed = parseConfig f
+  rates = estimateRates parsed
+  for role, rate of rates
+    perMinute = (rate*60).toFixed(2)
+    padded = ("                                     " + role).slice(-40);
+    console.log "#{padded}: #{perMinute} jobs/minute"
+
+main() if not module.parent
+
 exports.validate = validateConfig
 exports.parse = parseConfig
 exports.parseOnly = parse
