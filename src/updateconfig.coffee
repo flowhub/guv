@@ -4,7 +4,7 @@ config = require './config'
 updateRoleStats = (cfg, stats) ->
   if stats.average
     delete cfg.p if cfg.p
-    cfg.process = stats.average
+    cfg.processing = stats.average
     delete cfg.stddev if cfg.stddev # no longer valid
   if stats.stddev
     cfg.stddev = stats.stddev
