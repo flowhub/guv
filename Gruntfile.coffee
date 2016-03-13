@@ -3,6 +3,15 @@ module.exports = ->
   @initConfig
     pkg: @file.readJSON 'package.json'
 
+    yaml:
+      schemas:
+        files: [
+          expand: true
+          cwd: 'schemata/'
+          src: '*.yaml'
+          dest: 'schema/'
+        ]
+
     # BDD tests on Node.js
     mochaTest:
       nodejs:
@@ -37,6 +46,7 @@ module.exports = ->
           watch: true
 
   # Grunt plugins used for building
+  @loadNpmTasks 'grunt-yaml'
   @loadNpmTasks 'grunt-browserify'
 
   # Grunt plugins used for testing
@@ -46,6 +56,7 @@ module.exports = ->
   # Our local tasks
 
   @registerTask 'build', 'Build the chosen target platform', (target = 'all') =>
+    @task.run 'yaml'
     @task.run 'browserify'
 
   @registerTask 'test', 'Build and run automated tests', (target = 'all') =>

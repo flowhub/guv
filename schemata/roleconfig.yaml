@@ -1,0 +1,102 @@
+---
+id: roleconfig.json
+"$schema": "http://json-schema.org/draft-04/schema"
+title: Role configuration
+description: "Configuration of a single role"
+type:
+- object
+required: []
+properties:
+  # worker/processing characteristics
+  processing:
+    type: number
+    description: 'Mean job processing time'
+    unit: seconds
+    default: 10.0
+    shorthand: p
+  stddev:
+    type: number
+    description: 'Standard deviation (1σ) of job processing time: 68% completed within -+ this.'
+    unit: seconds
+    default: '50% of mean processing time'
+  deadline:
+    type: number
+    shorthand: d
+    description: 'Time practically all jobs should be completed within.'
+    unit: seconds
+    default: 60.0
+  boot:
+    type: number
+    description: "Mean boot time for worker. From sending scale up message to processing jobs"
+    unit: seconds
+    default: 30.0
+  concurrency:
+    type: number
+    description: 'Number of concurrent jobs the worker processes (prefetch in AMQP)'
+    default: 1.0
+    unit: 'jobs'
+
+  # worker limits
+  minimum:
+    type: number
+    shorthand: min
+    description: 'Minimum amount of workers'
+    unit: 'workers'
+    default: 1.0
+  maximum:
+    type: number
+    shorthand: max
+    description: 'Minimum amount of workers'
+    unit: 'workers'
+    default: 5.0
+
+  # names
+  worker:
+    type: string
+    description: 'Worker name (dyno role)'
+    shorthand: 'w'
+    default: 'role name'
+  queue:
+    type: string
+    description: 'Queue name'
+    default: 'role name'
+    shorthand: q
+  app:
+    type: string
+    description: 'Application name (ie on Heroku)'
+    default: 'GUV_APP envvar'
+  # FIXME,  broker url should be url scheme, not just string
+  broker:
+    type: string
+    description: 'Broker (ie RabbitMQ) URL'
+    default: 'CLOUDAMQP_URL or GUV_BROKER envvar'
+
+  # http://statuspage.io integration
+  statuspage:
+    type: string
+    description: 'Page id (for statuspage.io)'
+    default: 'STATUSPAGE_ID envvar'
+  metric:
+    type: string
+    description: 'Metric id (for statuspage.io)'
+
+  # derived/advanced process parameters
+  percentile:
+    type: number
+    unit: '%'
+    description: "Percentile of jobs that should happen within $deadline"
+    default: 99
+  target:
+    type: number
+    unit: seconds
+    description: 'Calculated based on process time and variance, to meet percentile and deadline.'
+  pollinterval:
+    type: number
+    unit: seconds
+    default: 30.0
+    description: 'How often to poll RabbitMQ, and possibly make changes'
+  history:
+    type: number
+    unit: seconds
+    description: 'How long history to consider, before scaling workers down'
+    default: 120.0

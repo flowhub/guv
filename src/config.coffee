@@ -9,6 +9,8 @@ yaml = require 'js-yaml'
 fs = require 'fs'
 path = require 'path'
 
+roleSchema = require '../schema/roleconfig.json'
+
 calculateTarget = (config) ->
   # Calculate the point which the process completes
   # the desired percentage of jobs within
@@ -40,60 +42,28 @@ parse = (str) ->
 serialize = (parsed) ->
   return yaml.safeDump parsed
 
+clone = (obj) ->
+  return JSON.parse JSON.stringify obj
+
 configFormat = () ->
-  varFormat =
-    [ 'short', 'name', 'description', 'unit', 'default' ]
-  varList = [
-
-    # system-unique process parameters
-    [ 'p', 'processing', 'Mean job processing time', 'seconds', 10.0 ]
-    [ null, 'stddev', 'Standard deviation (1σ) of job processing time: 68% completed within -+ this.', 'seconds', '50% of mean processing time' ]
-    [ 'd', 'deadline', 'Time practically all jobs should be completed within.', 'seconds', 60.0 ]
-    [ null, 'boot', 'Mean boot time. From adding worker to processing jobs', 'seconds', 30.0 ]
-    [ null, 'concurrency', 'Number of concurrent jobs the worker processes (prefetch in AMQP)', 'number', 1 ]
-
-    # worker limits
-    [ 'max', 'maximum', 'Maximum amount of workers', 'N workers', 5 ]
-    [ 'min', 'minimum', 'Minimum amount of workers', 'N workers', 1 ]
-
-    # names
-    [ 'w', 'worker', 'Worker name (dyno role)', 'string', 'role name' ]
-    [ 'q', 'queue', 'Queue name', 'string', 'role name' ]
-    [ null, 'app', 'Application name (ie on Heroku)', 'string', 'GUV_APP envvar' ]
-    [ null, 'broker', 'Broker (ie RabbitMQ) URL', 'url', 'CLOUDAMQP_URL or GUV_BROKER envvar' ]
-
-    # http://statuspage.io integration
-    [ null, 'statuspage', 'Page id (for statuspage.io)', 'string', 'STATUSPAGE_ID envvar' ]
-    [ null, 'metric', 'Metric id (for statuspage.io)', 'string', null ]
-
-    # derived/advanced process parameters
-    [ null, 'percentile', ' ', '%', 99 ]
-    [ null, 'target', ' ', 'seconds', 'Calculated based on process time and variance, to meet percentile and deadline.' ]
-    [ null, 'pollinterval', 'How often to poll RabbitMQ, and possibly make changes', 'seconds', 30 ]
-    [ null, 'history', 'How long history to consider, before scaling workers down', 'seconds', 120 ]
-
-  ]
   format =
     shortoptions: {}
     options: {}
-  for v in varList
-    o = {}
-    varFormat.forEach (field, i) ->
-      o[field] = v[i]
-    o.type = 'string'
-    o.type = 'number' if o.unit in [ 'N workers', 'seconds', '%' ]
-    format.options[o.name] = o
-    format.shortoptions[o.short] = o if o.short
+  for name, value of roleSchema.properties
+    o = clone value
+    throw new Error "Missing type for config property #{name}" if not o.type
+    o.name = name
+    format.options[name] = o
+    format.shortoptions[o.shorthand] = o if o.shorthand
 
   return format
 
 addDefaults = (format, role, c) ->
-
   for name, option of format.options
     continue if typeof option.default == 'string'
     c[name] = option.default if not c[name]?
 
-  # TODO: make these functions with a toString, declared in varList?
+  # TODO: have a way of declaring these functions in JSON schema?
   c.statuspage = process.env['STATUSPAGE_ID'] if not c.statuspage
   c.broker = process.env['GUV_BROKER'] if not c.broker
   c.broker = process.env['CLOUDAMQP_URL'] if not c.broker

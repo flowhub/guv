@@ -1,0 +1,13 @@
+---
+id: config.json
+"$schema": "http://json-schema.org/draft-04/schema"
+title: Guv configuration
+description: "Overall guv configuration"
+type:
+- object
+properties:
+  '*':
+    "$ref": "roleconfig.json"
+    description: Global configuration, inherited by each role
+additionalProperties:
+  "$ref": "roleconfig.json"
