@@ -27,7 +27,7 @@ guv is free and open source software under the [MIT license](./LICENSE.md)
 * Uses simple proportional algorithm for scaling to maintain a quality-of-service deadline
 * Optional metric reporting to [statuspage.io](http://statuspage.io/) and [New Relic](http://newrelic.com)
 * Used in production at [The Grid](https://thegrid.io) since June 2015
-(with [MsgFlo](https://github.com/msgflo/msgflo))
+(with [MsgFlo](https://github.com/msgflo/msgflo)), performing over 1 million jobs per week
 
 ## Usage
 
@@ -63,7 +63,10 @@ To verify that guv is running and working, check its log.
 ## Configuration
 
 The configuration format for guv is based specified in [YAML](http://yaml.org/).
-Since it is a superset of JSON, you can also use that.
+Since YAML is a superset of JSON, you can also use JSON.
+
+guv configuration files by convention use the extension *.guv.yaml*,
+for instance `autoscale.guv.yaml` or `myproject.guv.yaml`.
 
 One guv instance can handle multiple worker *roles*.
 Each role has an associated queue, worker and scaling configuration - specified as variables.
@@ -112,11 +115,7 @@ The name of the `worker` and `queue` defaults to the `role name`, but can be ove
       queue: 'hist.INPUT'
       worker: processhistograms
 
-For list of all supported configuration variables see [./src/config.coffee](./src/config.coffee).
-Many of the commonly used ones have short and long-form names.
-
-guv configuration files by convention use the extension *.guv.yaml*,
-for instance `autoscale.guv.yaml` or `myproject.guv.yaml`.
+For list of all supported configuration variables see the [config format schemas](./schemata).
 
 # Metrics support
 
