@@ -96,10 +96,10 @@ class Governor extends EventEmitter
   runOnce: (callback) ->
     @runOnceInternal (err, state) =>
       debug 'ran iteration', err, state
-      @emit 'state', state
       @emit 'error', err if err
       for name, role of state
         @emit 'error', role.error if role.error
+      @emit 'state', state
       return callback err, state
 
 exports.Governor = Governor
