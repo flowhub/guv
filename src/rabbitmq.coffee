@@ -9,10 +9,11 @@ url = require 'url'
 amqpOptions = (str) ->
   o = {}
   u = url.parse str
-  [ user, password ] = u.auth.split ':'
+  if u.auth
+    [ user, password ] = u.auth.split ':'
+    o.username = user
+    o.password = password
   o.hostname = u.host # includes port
-  o.username = user
-  o.password = password
   o.protocol = 'https'
   return o
 
