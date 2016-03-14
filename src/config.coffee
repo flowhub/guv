@@ -172,7 +172,7 @@ main = () ->
   rates = estimateRates parsed
   for role, rate of rates
     perMinute = (rate*60).toFixed(2)
-    padded = ("                                     " + role).slice(-40);
+    padded = ("                                     " + role).slice(-40)
     console.log "#{padded}: #{perMinute} jobs/minute"
 
 main() if not module.parent
