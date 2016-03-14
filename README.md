@@ -126,12 +126,15 @@ guv can report errors, and metrics about how workers are being scaled to [New Re
 To enable, [setup a newrelic.js configuration](https://docs.newrelic.com/docs/agents/nodejs-agent/installation-configuration/nodejs-agent-configuration)
 in the application that runs guv.
 
-guv will one events of type `GuvScaled` per configured role, with payload:
+guv will one events of type `GuvScaled` per configured role/queue, with payload:
 
       role: 'workerA'    # guv role this event is for
       app: 'imgflo'      # Heroku app name
       jobs: 142          # current jobs in queue
       workers: 7         # new value for number of workers
+      fillrate: 2.1      # new jobs per second
+      drainrate: 1.7     # jobs completed per second
+      consumers: 3       # number of workers actually consuming from queue. Changes will trail workers
 
 ## Statuspage.io
 

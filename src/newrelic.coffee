@@ -19,11 +19,14 @@ onStateChanged = (state) ->
 
   for role, data of state
     event =
+      role: role
       app: data.app
       jobs: data.current_jobs
       workers: data.new_workers
-      role: role
-    debug 'recording event', 'GuvScaled'
+      drainrate: data.drainrate
+      fillrate: data.fillrate
+      consumers: data.consumers
+    debug 'recording event', 'GuvScaled', role
     nr.recordCustomEvent 'GuvScaled', event
 
 exports.register = (governor) ->

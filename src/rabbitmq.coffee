@@ -17,6 +17,7 @@ amqpOptions = (str) ->
   o.protocol = 'https'
   return o
 
+# http://hg.rabbitmq.com/rabbitmq-management/raw-file/9b44a7aca551/priv/www/doc/stats.html
 exports.getStats = (config, callback) ->
 
   options = amqpOptions config.broker
@@ -29,5 +30,7 @@ exports.getStats = (config, callback) ->
     stats = {}
     for queue in queues
       details[queue.name] = queue
+      details[queue.name].fillrate = queue.message_stats?.publish_details?.rate
+      details[queue.name].drainrate = queue.message_stats?.ack_details?.rate
       stats[queue.name] = queue.messages
     return callback null, stats, details

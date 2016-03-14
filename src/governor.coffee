@@ -16,7 +16,7 @@ extractHistory = (history, rolename, key) ->
     predictions.push state[rolename][key]
   return predictions
 
-nextState = (cfg, window, queues) ->
+nextState = (cfg, window, queues, queueDetails) ->
 
   state = {}
   # TODO: store timestamps?
@@ -26,6 +26,10 @@ nextState = (cfg, window, queues) ->
     s.current_jobs = queues[role.queue]
     s.metric = role.metric
     s.app = role.app
+    details = queueDetails[role.queue]
+    s.consumers = details.consumers
+    s.drainrate = details.drainrate
+    s.fillrate = details.fillrate
 
     if not s.current_jobs?
       s.error = new Error "Could not get data for queue: #{role.queue}"
@@ -78,8 +82,8 @@ class Governor extends EventEmitter
   stop: () ->
     clearInterval @interval if @interval
 
-  nextState: (err, queues) ->
-    state = nextState @config, @history, queues
+  nextState: (err, queues, details) ->
+    state = nextState @config, @history, queues, details
     @history.push state
     @history = @history.slice Math.max(@history.length-@historysize, 0)
     debug 'history length', @history.length
@@ -87,8 +91,8 @@ class Governor extends EventEmitter
 
   runOnceInternal: (callback) ->
     try
-      rabbitmq.getStats @config['*'], (err, queues) =>
-        state = @nextState err, queues
+      rabbitmq.getStats @config['*'], (err, queues, details) =>
+        state = @nextState err, queues, details
         realizeState @config, state, callback
     catch e
       return callback e
