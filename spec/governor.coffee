@@ -13,7 +13,7 @@ describe 'Governor', ->
     # must be set before running tests
     cfg = guv.config.parse ""
     chai.expect(cfg['*'].broker).to.include 'amqp://'
-    chai.expect(process.env['HEROKU_API_KEY']).to.have.length.above 10
+    chai.expect(process.env['HEROKU_API_KEY'], 'HEROKU_API_KEY envvar not set').to.exist
     mocks.startRecord()
 
   after () ->
