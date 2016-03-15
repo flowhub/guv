@@ -131,6 +131,7 @@ applyEvent = (state, event) ->
   state.startups = [] if not state.startups
   state.shutdowns = [] if not state.shutdowns
   state.scaleups = [] if not state.scaleups
+  state.uptimes = [] if not state.uptimes
   state.requestedWorkers = {} if not state.requestedWorkers # 'dyno" -> Number
 
   # Note, they can happen initially because we don't generally know initial state
@@ -197,6 +198,13 @@ applyEvent = (state, event) ->
 
       when 'process-stopping'
         if state.dynostate[event.dyno] == 'started'
+          s =
+            dyno: event.dyno
+            start: state.lasttransition[event.dyno]
+            end: event
+          s.duration = s.end.time.getTime() - s.start.time.getTime()
+          state.uptimes.push s
+
           state.dynostate[event.dyno] = 'stopping'
           state.lasttransition[event.dyno] = event
         else
@@ -234,16 +242,23 @@ analyzeStartups = (filename, started, callback) ->
     starts = state.startups.map (s) -> s.duration/1000
     stops = state.shutdowns.map (s) -> s.duration/1000
     scaleups = state.scaleups.map (s) -> s.duration/1000
+    uptimes = state.uptimes.map (s) -> s.duration/1000
     results =
       scaleup: statistics.median scaleups
       scaleup_stddev: statistics.standard_deviation scaleups
       scaleup_length: scaleups.length
+      uptime: statistics.median uptimes
+      uptime_stddev: statistics.standard_deviation uptimes
+      uptime_length: uptimes.length
       startup: statistics.mean starts
       startup_stddev: statistics.standard_deviation starts
       startup_length: starts.length
       shutdown: statistics.mean stops
       shutdown_stddev: statistics.standard_deviation stops
       shutdown_length: stops.length
+    wasted = results.scaleup + results.startup + results.shutdown # assumes Heroku charges for all these steps
+    results.utilization = results.uptime / (results.uptime + wasted)
+
     return callback null, results
 
 # TODO: calculate whole delay from scaling to up by default, and scaling down to down
