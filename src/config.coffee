@@ -165,6 +165,22 @@ estimateRates = (cfg) ->
 
   return rates
 
+countMinimumWorkers = (cfg) ->
+  byType = {}
+  for role, c of cfg
+    continue if role == '*'
+    byType[c.dynosize] = 0 if not byType[c.dynosize]?
+    byType[c.dynosize] += c.minimum
+  return byType
+countMaximumWorkers = (cfg) ->
+  byType = {}
+  for role, c of cfg
+    continue if role == '*'
+    byType[c.dynosize] = 0 if not byType[c.dynosize]?
+    byType[c.dynosize] += c.maximum
+  return byType
+
+
 main = () ->
   p = process.argv[2]
   f = fs.readFileSync p, 'utf-8'
@@ -174,6 +190,16 @@ main = () ->
     perMinute = (rate*60).toFixed(2)
     padded = ("                                     " + role).slice(-40)
     console.log "#{padded}: #{perMinute} jobs/minute"
+
+  minimums = countMinimumWorkers parsed
+  console.log 'Workers minimum'
+  for type, value of minimums
+    console.log "\t#{type}: #{value} workers"
+
+  maximums = countMaximumWorkers parsed
+  console.log 'Workers maximum'
+  for type, value of maximums
+    console.log "\t#{type}: #{value} workers"
 
 main() if not module.parent
 
