@@ -129,7 +129,7 @@ applyEvent = (state, event) ->
   state.dynostate = {} if not state.dynostate # 'dyno.N' -> DynoState
   state.startups = [] if not state.startups
   state.shutdowns = [] if not state.shutdowns
-  state.startrequests = [] if not state.startrequests
+  state.scaleups = [] if not state.scaleups
   state.requestedWorkers = {} if not state.requestedWorkers # 'dyno" -> Number
 
   # Note, they can happen initially because we don't generally know initial state
@@ -166,6 +166,13 @@ applyEvent = (state, event) ->
 
       when 'process-starting'
         if state.lasttransition[event.dyno] and state.dynostate[event.dyno] == 'requested'
+          s =
+            dyno: event.dyno
+            start: state.lasttransition[event.dyno]
+            end: event
+          s.duration = s.end.time.getTime() - s.start.time.getTime()
+          state.scaleups.push s
+
           state.dynostate[event.dyno] = 'starting'
           state.lasttransition[event.dyno] = event
         else
@@ -225,7 +232,11 @@ analyzeStartups = (filename, started, callback) ->
 
     starts = state.startups.map (s) -> s.duration/1000
     stops = state.shutdowns.map (s) -> s.duration/1000
+    scaleups = state.scaleups.map (s) -> s.duration/1000
     results =
+      scaleup: statistics.mean scaleups
+      scaleup_stddev: statistics.standard_deviation scaleups
+      scaleup_length: scaleups.length
       startup: statistics.mean starts
       startup_stddev: statistics.standard_deviation starts
       startup_length: starts.length
