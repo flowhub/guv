@@ -63,6 +63,7 @@ parseScaleTo = (str) ->
 eventsFromLog = (logdata, started) ->
   events = []
 
+  # TODO: allow to output a cleaned/minimized logfile. Especially for tests
   # timestamp, target (app|heroku), action
   re = /^(.*?) (\w+)\[(.*)\]: (.*)$/mg
   matches = matchAll re, logdata
@@ -234,7 +235,7 @@ analyzeStartups = (filename, started, callback) ->
     stops = state.shutdowns.map (s) -> s.duration/1000
     scaleups = state.scaleups.map (s) -> s.duration/1000
     results =
-      scaleup: statistics.mean scaleups
+      scaleup: statistics.median scaleups
       scaleup_stddev: statistics.standard_deviation scaleups
       scaleup_length: scaleups.length
       startup: statistics.mean starts
