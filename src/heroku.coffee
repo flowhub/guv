@@ -48,6 +48,18 @@ startsWith = (str, prefix) ->
   return str.indexOf(prefix) == 0
 
 
+# input format:
+# Scale to guv=1, measuremedia=1, solveslow=10, web=3 by team+gridbot@thegrid.io
+parseScaleTo = (str) ->
+  re = /Scale to (.*) by.*/
+  match = re.exec str
+  dynostr = match[1]
+  dynos = {}
+  for d in dynostr.split ', '
+    [name, number] = d.split('=')
+    dynos[name] = parseInt(number)
+  return dynos
+
 eventsFromLog = (logdata, started) ->
   events = []
 
@@ -84,8 +96,11 @@ eventsFromLog = (logdata, started) ->
 
     # events we care about
     else if startsWith info, 'Scale to'
-      events.push { type: 'scale-to', time: timestamp, msg: info }
-    # note: can be up or down, on multiple dynos.
+      # note: affects multiple dynos, each can go up, down or no change
+      scaleTo = parseScaleTo info
+      for name, number of scaleTo
+        events.push { type: 'scale-to', time: timestamp, requested: number, dyno: name, msg: info }
+    
     # Should we synthesize per-dyno events from it? requires context...
 
     else if startsWith info, 'State changed from up to down'
@@ -114,15 +129,47 @@ applyEvent = (state, event) ->
   state.dynostate = {} if not state.dynostate # 'dyno.N' -> DynoState
   state.startups = [] if not state.startups
   state.shutdowns = [] if not state.shutdowns
+  state.startrequests = [] if not state.startrequests
+  state.requestedWorkers = {} if not state.requestedWorkers # 'dyno" -> Number
 
   # Note, they can happen initially because we don't generally know initial state
   if event.dyno
     # Dyno-specific events
     #console.log event.dyno, event.type
     switch event.type
+      when 'scale-to'
+        old = state.requestedWorkers[event.dyno]
+        newValue = event.requested
+        #console.log 'scale:', event.dyno, newValue, old, state.requestedWorkers
+        if newValue > old
+          # TODO: validate that number of running matches expected
+          lastNotExited = 0
+          for dynoname, dynostate of state.dynostate
+            if startsWith dynoname, "#{event.dyno}."
+              [dynorole, dynonr] = dynoname.split '.'
+              dynonr = parseInt dynonr
+              #console.log 's', dynoname, dynostate
+              if dynostate != 'exited' and dynostate != 'requested' and dynonr > lastNotExited
+                lastNotExited = dynonr
+          firstNew = lastNotExited+1
+          lastNew = firstNew+(newValue-old)-1
+          for i in [firstNew..lastNew]
+            name = "#{event.dyno}.#{i}"
+            #console.log 'adding', name
+            state.dynostate[name] = 'requested'
+            state.lasttransition[name] = event
+        else if newValue < old
+          #console.log 'less', event.dyno, old, newValue
+        else
+          null # no change
+        state.requestedWorkers[event.dyno] = newValue
+
       when 'process-starting'
-        state.dynostate[event.dyno] = 'starting'
-        state.lasttransition[event.dyno] = event
+        if state.lasttransition[event.dyno] and state.dynostate[event.dyno] == 'requested'
+          state.dynostate[event.dyno] = 'starting'
+          state.lasttransition[event.dyno] = event
+        else
+          debug 'invalid transition', event.type, state.dynostate[event.dyno]
       when 'process-started'
         if state.lasttransition[event.dyno] and state.dynostate[event.dyno] == 'starting'
           s =
@@ -162,7 +209,7 @@ applyEvent = (state, event) ->
           debug 'invalid transition', event.type, state.dynostate[event.dyno]
 
   else
-    # FIXME: handle. Maybe outside/before. Particularly scale-to?
+    # FIXME: handle. Maybe outside/before
 
 
 analyzeStartups = (filename, started, callback) ->
@@ -199,7 +246,8 @@ exports.startuptime_main = () ->
   filename = null
   program
     .arguments('<heroku.log>')
-    .option('--started <regexp>', 'Regular expression matching output sent by process when started', String, 'noflo-runtime-msgflo started')
+    .option('--started <regexp>', 'Regular expression matching output sent by process when started',
+            String, 'noflo-runtime-msgflo started')
     .action (f, env) ->
       filename = f
     .parse(process.argv)
