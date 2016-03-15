@@ -27,9 +27,10 @@ nextState = (cfg, window, queues, queueDetails) ->
     s.metric = role.metric
     s.app = role.app
     details = queueDetails[role.queue]
-    s.consumers = details.consumers
-    s.drainrate = details.drainrate
-    s.fillrate = details.fillrate
+    if details?
+      s.consumers = details.consumers
+      s.drainrate = details.drainrate
+      s.fillrate = details.fillrate
 
     if not s.current_jobs?
       s.error = new Error "Could not get data for queue: #{role.queue}"
