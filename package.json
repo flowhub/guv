@@ -25,7 +25,7 @@
     "gaussian": "~1.1.0",
     "heroku-client": "~2.2.2",
     "js-yaml": "~3.5.2",
-    "newrelic": "~1.25.4",
+    "newrelic": "~1.27.0",
     "node-insights": "^1.0.15",
     "request": "~2.69.0",
     "simple-statistics": "~0.9.2",
