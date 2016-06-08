@@ -228,7 +228,39 @@ applyEvent = (state, event) ->
     # FIXME: handle. Maybe outside/before
 
 
-analyzeStartups = (filename, started, callback) ->
+calculateStats = (state) ->
+  starts = state.startups.map (s) -> s.duration/1000
+  stops = state.shutdowns.map (s) -> s.duration/1000
+  scaleups = state.scaleups.map (s) -> s.duration/1000
+  uptimes = state.uptimes.map (s) -> s.duration/1000
+  results =
+    scaleup: statistics.median scaleups
+    scaleup_stddev: statistics.standard_deviation scaleups
+    scaleup_length: scaleups.length
+    uptime: statistics.median uptimes
+    uptime_stddev: statistics.standard_deviation uptimes
+    uptime_length: uptimes.length
+    startup: statistics.mean starts
+    startup_stddev: statistics.standard_deviation starts
+    startup_length: starts.length
+    shutdown: statistics.mean stops
+    shutdown_stddev: statistics.standard_deviation stops
+    shutdown_length: stops.length
+  wasted = results.scaleup + results.startup + results.shutdown # assumes Heroku charges for all these steps
+  results.utilization = results.uptime / (results.uptime + wasted)
+
+  return results
+
+hasDynos = (roles) ->
+  return (s) ->
+    hasRoles = roles? and roles.length # empty array means include everything
+    return true if not hasRoles
+    [role, number] = s.dyno.split '.'
+    include = role in roles
+
+    return include
+
+analyzeStartups = (filename, started, dynos, callback) ->
   fs = require 'fs'
 
   state = {}
@@ -239,27 +271,18 @@ analyzeStartups = (filename, started, callback) ->
     for e in events
       applyEvent state, e
 
-    starts = state.startups.map (s) -> s.duration/1000
-    stops = state.shutdowns.map (s) -> s.duration/1000
-    scaleups = state.scaleups.map (s) -> s.duration/1000
-    uptimes = state.uptimes.map (s) -> s.duration/1000
-    results =
-      scaleup: statistics.median scaleups
-      scaleup_stddev: statistics.standard_deviation scaleups
-      scaleup_length: scaleups.length
-      uptime: statistics.median uptimes
-      uptime_stddev: statistics.standard_deviation uptimes
-      uptime_length: uptimes.length
-      startup: statistics.mean starts
-      startup_stddev: statistics.standard_deviation starts
-      startup_length: starts.length
-      shutdown: statistics.mean stops
-      shutdown_stddev: statistics.standard_deviation stops
-      shutdown_length: stops.length
-    wasted = results.scaleup + results.startup + results.shutdown # assumes Heroku charges for all these steps
-    results.utilization = results.uptime / (results.uptime + wasted)
+    state.startups = state.startups.filter hasDynos(dynos)
+    state.shutdowns = state.shutdowns.filter hasDynos(dynos)
+    state.scaleups = state.scaleups.filter hasDynos(dynos)
+    state.uptimes = state.uptimes.filter hasDynos(dynos)
+
+    results = calculateStats state
 
     return callback null, results
+
+collectOption = (value, array) ->
+  array.push value
+  return array
 
 # TODO: calculate whole delay from scaling to up by default, and scaling down to down
 # TODO: allow to separate between (module) loading time, and startup time
@@ -275,6 +298,8 @@ exports.startuptime_main = () ->
     .arguments('<heroku.log>')
     .option('--started <regexp>', 'Regular expression matching output sent by process when started',
             String, 'noflo-runtime-msgflo started')
+    .option('--role <rolename>', 'Calculate stats for a subset of roles. Can be specified multiple times',
+            collectOption, [])
     .action (f, env) ->
       filename = f
     .parse(process.argv)
@@ -282,7 +307,8 @@ exports.startuptime_main = () ->
 
   started = (info) ->
     return program.started.test info
-  analyzeStartups filename, started, (err, res) ->
+  roles = program.role
+  analyzeStartups filename, started, roles, (err, res) ->
     throw err if err
     console.log res
 
