@@ -1,6 +1,6 @@
 -
   name: 'no messages'
-  expected: 'should go to minimum'
+  expect: 'should go to minimum'
   result: 3
   role: 'def'
   config: |
