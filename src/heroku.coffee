@@ -12,7 +12,7 @@ exports.dryrun = false
 
 exports.setWorkers = (config, workers, callback) ->
   options =
-    token: process.env['HEROKU_API_KEY']
+    token: config.apikey or process.env['HEROKU_API_KEY']
   heroku = new Heroku options
 
   # sort workers into belonging app/formation

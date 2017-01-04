@@ -75,6 +75,10 @@ properties:
     type: string
     description: 'Broker (ie RabbitMQ) URL'
     default: 'CLOUDAMQP_URL or GUV_BROKER envvar'
+  apikey:
+    type: string
+    description: 'Heroku API key'
+    default: 'HEROKU_API_KEY envvar'
 
   # http://statuspage.io integration
   statuspage:
