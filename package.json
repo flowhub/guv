@@ -27,7 +27,7 @@
     "js-yaml": "~3.7.0",
     "newrelic": "~1.33.0",
     "node-insights": "^1.0.15",
-    "request": "~2.69.0",
+    "request": "~2.77.0",
     "simple-statistics": "~2.2.0",
     "tv4": "^1.2.7"
   },
