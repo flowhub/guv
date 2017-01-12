@@ -19,7 +19,7 @@
   "dependencies": {
     "amqp-stats": "~0.0.14",
     "async": "~2.1.4",
-    "coffee-script": "~1.11.1",
+    "coffee-script": "~1.12.0",
     "commander": "~2.8.1",
     "debug": "~2.3.3",
     "gaussian": "~1.1.0",
