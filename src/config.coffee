@@ -154,6 +154,10 @@ validateConfigObject = (parsed, options) ->
     role = e.dataPath.split('/')[1]
     property = e.dataPath.split('/')[2]
     err = new Error "#{e.message} for #{e.dataPath}"
+    err.role = role
+    err.property = property
+    delete e.stack
+    err.schemaError = e
     errors.push err
 
   return errors
