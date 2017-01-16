@@ -108,8 +108,7 @@ normalize = (role, vars, globals) ->
 
   return retvars
 
-parseConfig = (str) ->
-  parsed = parse str
+loadConfig = (parsed) ->
   config = {}
 
   # Extract globals first, as they will be merged into individual roles
@@ -122,6 +121,10 @@ parseConfig = (str) ->
     config[role] = normalize role, vars, config[globalRole]
 
   return config
+
+parseConfig = (str) ->
+  parsed = parse str
+  return loadConfig parsed
 
 validateConfig = (str, options) ->
   tv4 = require 'tv4'
@@ -206,5 +209,6 @@ main() if not module.parent
 exports.validate = validateConfig
 exports.parse = parseConfig
 exports.parseOnly = parse
+exports.load = loadConfig
 exports.serialize = serialize
 exports.defaults = addDefaults
