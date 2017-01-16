@@ -108,8 +108,7 @@ normalize = (role, vars, globals) ->
 
   return retvars
 
-parseConfig = (str) ->
-  parsed = parse str
+loadConfig = (parsed) ->
   config = {}
 
   # Extract globals first, as they will be merged into individual roles
@@ -123,11 +122,14 @@ parseConfig = (str) ->
 
   return config
 
-validateConfig = (str, options) ->
+parseConfig = (str) ->
+  parsed = parse str
+  return loadConfig parsed
+
+validateConfigObject = (parsed, options) ->
   tv4 = require 'tv4'
   tv4.addSchema schemas.roleconfig.id, schemas.roleconfig
   tv4.addSchema schemas.config.id, schemas.config
-  parsed = parse str
 
   options.allowKeys = [] if not options.allowKeys
 
@@ -155,6 +157,10 @@ validateConfig = (str, options) ->
     errors.push err
 
   return errors
+
+validateConfig = (str, options) ->
+  parsed = parse str
+  return validateConfigObject parsed, options
 
 estimateRates = (cfg) ->
   rates = {}
@@ -204,7 +210,9 @@ main = () ->
 main() if not module.parent
 
 exports.validate = validateConfig
+exports.validateObject = validateConfigObject
 exports.parse = parseConfig
 exports.parseOnly = parse
+exports.load = loadConfig
 exports.serialize = serialize
 exports.defaults = addDefaults
