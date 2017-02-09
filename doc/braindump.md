@@ -17,6 +17,85 @@ Discrete-event simulation
 pedagocical introduction of concepts and possible ways to implement.
 * [Sim.js](https://github.com/btelles/simjs-updated), JavaScript library for discrete-event simulation. Updated in 2016, but not much used.
 
+### Aspects
+
+#### Input process
+Part of app / execution environment.
+Type of distribution. Poisson, uniform
+Distribution parameters
+Low-load conditions
+High-load conditions
+Periodic changes
+Gradual changes, abrupt changes
+
+#### Job processing
+Each assumed to be mostly independent.
+However not entirely true. Sharing CPU resources, sharing RAM, sharing disk I/O, network I/O,
+at least with other jobs in same worker. Possibly also with other workers, and
+even other workers from other apps co-hosted on the same hardware/hypervisor.
+
+#### Worker
+Part of app.
+
+Actions: Scale up, scale down. Complete new message.
+Spawn time (Cloud service side), startup time (app side).
+Shutdown time (app side)
+
+Prefetch setting
+
+Worker crash (and restart)
+Worker crashed state (not restarting)
+Worker deadlocked. Not accepting new messages
+
+#### Broker service (RabbitMQ)
+
+Interfaces:
+HTTP GET for Autoscaling communication
+AMQP broker for worker/app communication.
+
+Broker crash/restart
+Broker not accepting messages. Quota full etc.
+Timeout getting queue info
+Unexpected error getting queue info
+
+#### Cloud service (Heroku)
+
+Interface: HTTP GET/POST
+
+Exceeding max workers
+Permission denied. Wrong credentials etc
+Unexpected error.
+
+#### Autoscaling service (guv)
+
+Role configuration
+Scaling algorithm
+
+
+### General considerations
+
+Many of the aspects considered apply to MsgFlo, without autoscaling.
+Also in other systems, like IoT using MQTT/Mosquitto.
+
+Need a componenent models. Using NoFlo.js would be nice for that.
+Would be nice to use FBP graphs for setting up network.
+But if event-driven the evaluation model does not match, events need
+to be executed based on the time the new event is for.
+
+All cross-service comunication goes over network.
+There is a non-trivial amount of latency, and a non-zero error rate.
+The simulation should be able to model this, including bad and error-conditions.
+
+### Use for end-to-end testing
+
+If simulation can talk the regular protocols, it can be used to run the real service against in end-to-end tests.
+Such tests likely need less simulation fidelity, and run with simulation speed == real-time.
+But possibly using some data recorded from the past, either from simulation or real system.
+Such data can probably be re-dated. 
+
+In end-to-end, should probably mostly be using a standard AMQP broker.
+The ability to simulate AMQP broker makes it possible.
+
 ## Queueing theory
 https://en.wikipedia.org/wiki/Queueing_theory
 
