@@ -8,6 +8,88 @@ Visual+[analytical test](https://en.wikipedia.org/wiki/Normality_test).
 - A runnable+introspectable model of the scaling algorithm. Ability to test it on real/historical data.
 - For a given configuration, estimate what loads can (and cannot) be handled
 
+## Simulation
+
+Discrete-event simulation
+
+* [Introduction to Discrete-Event Simulation and the SimPy Language](http://heather.cs.ucdavis.edu/~matloff/156/PLN/DESimIntro.pdf)
+* [An introduction to Discrete-Event Simulation](https://www.cs.cmu.edu/~music/cmsip/readings/intro-discrete-event-sim.html),
+pedagocical introduction of concepts and possible ways to implement.
+* [Sim.js](https://github.com/btelles/simjs-updated), JavaScript library for discrete-event simulation. Updated in 2016, but not much used.
+
+## Queueing theory
+https://en.wikipedia.org/wiki/Queueing_theory
+
+> The average delay any given packet is likely to experience is given by the formula 1/(μ-λ)
+> where μ is the number of packets per second the facility can sustain
+> and λ is the average rate at which packets are arriving to be serviced
+https://en.wikipedia.org/wiki/Queuing_delay (networking theory)
+
+> The long-term average number of customers in a stable system L is equal to
+> the long-term average effective arrival rate, λ, multiplied by the (Palm‑)average time a customer spends in the system, W;
+> or expressed algebraically: L = λW
+> 
+> "not influenced by the arrival process distribution, the service distribution, the service order, or practically anything else"
+https://en.wikipedia.org/wiki/Little%27s_law
+
+
+[The General Distributional Little's Law and its Applications](https://dspace.mit.edu/bitstream/handle/1721.1/2348/SWP-3277-23661119.pdf)
+
+> `M/M/c queue` in Kendall's notation it describes a system where arrivals form a single queue
+> and are governed by a Poisson process,
+> there are c servers and job service times are *exponentially distributed*.
+https://en.wikipedia.org/wiki/M/M/c_queue
+
+Can we model job processing times with an [exponential distribution](https://en.wikipedia.org/wiki/Exponential_distribution)?
+Means executing at less than median is more probable than executing at more.
+Maybe if job processing time is dependent on payload (linear or above linear), and large payloads are rare compared to small.
+This *might* be the case for instance for images.
+
+> M/G/k queue is a queue model where arrivals are Markovian (modulated by a Poisson process),
+> service times have a General distribution and thereare k servers
+> Most performance metrics for this queueing system are not known and remain an open problem.
+https://en.wikipedia.org/wiki/M/G/k_queue
+
+Assuming a Poisson-distributed in model, and a normal distributed processing time model,
+this is the category that guv currently ends up in.
+
+An approximation that has been proposed, is to use the coefficient of variation of the service time distribution (C)
+as a correcting factor on the solution for the M/M/c case. Known as 
+
+[Approximations for the GI/G/m Queue](http://www.columbia.edu/~ww2040/ApproxGIGm1993.pdf) (Whitt, AT&T Bell Labs, 1993).
+Section 2 covers Expected Waiting Time (EWT). Also considered are estimates for queue length (EQ),
+number of active servers (EB), number of customers in the system (EN), total time including processing (ET).
+There exists exact relations between all of these numbers (Equations 2.2),
+so it suffices to find one of the variables to obtain an estimate for the others. 
+Equation (2.14) proposes an heavy-traffic estimate for EW for GI/G/m based on the known EW(M/M/m), corrected using .
+A special-case with cA^2=1 can also give a known heavy-traffic estimate for M/G/m.
+It states that "however, improvements can be made considering light-traffic limits), citing a number of papers.
+Equation 2.24 is the proposed "New" algorithm, applying pieces of existing known estimates or exact solutions.
+This is shown to work well, with exact match to EB, very accurate EN, and fairly accurate+robust EW.
+
+This method is similar in basic principle (using variance to correct) to what guv currently does, but much more rigorous. 
+
+
+> The Poisson point process is often defined on the real line, where it can be considered as a stochastic process.
+> In this setting, it is used, for example, in queueing theory to model random events,
+> such as the arrival of customers at a store or phone calls at an exchange, distributed in time
+https://en.wikipedia.org/wiki/Poisson_point_process
+
+Any process has two key properties: follows a Poisson distribution, and there is complete independence between events.
+Two sub-categories exist. Homogenous/stationary, which has one constant parameter λ, the rate/intensity.
+λ can be interpreted as the average number of points per some unit of extent (ex: time). Can be called mean rate / mean density.
+For an inhomogenous/nonhomogenous process, the Poisson parameter is a *location dependent function of the space*.
+
+> A feature of the one-dimension setting, is that an inhomogeneous Poisson process can be transformed into a homogeneous
+> by a monotone transformation or mapping, which is achieved with the inverse of Λ
+
+> The inhomogeneous Poisson point process, when considered on the positive half-line, is also sometimes defined as a counting process.
+> A counting process is said to be an inhomogeneous Poisson counting process if it has the four properties...
+This has a special-case, simplified, solution
+
+How to simulate a Poisson point process: https://en.wikipedia.org/wiki/Poisson_point_process#Simulation
+
+
 ## Smarter scaling
 
 Right now, guv uses the simplest (stupidest) model that can possibly work:
