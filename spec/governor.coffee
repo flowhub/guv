@@ -37,6 +37,7 @@ describe 'Governor', ->
 
     describe 'no messages in queue', ->
       it 'should scale to minimum', (done) ->
+        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 1 }
         mocks.RabbitMQ.setQueues
           'myrole.IN':
             'messages': 0
@@ -56,6 +57,7 @@ describe 'Governor', ->
 
     describe 'lots of messages in queue', ->
       it 'should scale to maximum', (done) ->
+        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 0 }
         mocks.RabbitMQ.setQueues
           'myrole.IN':
             'messages': 1000
@@ -78,19 +80,19 @@ describe 'Governor', ->
 
       it 'should scale up quickly then slowly down again', (done) ->
         governor.once 'error', (err) ->
-          chai.expect(err).to.not.exist
+          chai.expect(err, JSON.stringify(err) ).to.not.exist
 
         series = [
-          { messages: 0, workers: cfg.my.minimum } # filling up history
-          { messages: 0, workers: null }
-          { messages: 0, workers: null }
-          { messages: 0, workers: null }
-          { messages: 100, workers: cfg.my.maximum } # fast up
-          { messages: 0, workers: null } # no-op for 120 seconds, 4 iterations
-          { messages: 0, workers: null }
-          { messages: 0, workers: null }
-          { messages: 0, workers: null }
-          { messages: 0, workers: cfg.my.minimum } # down
+          { messages: 0, current: 99, next: cfg.my.minimum } # filling up history
+          { messages: 0, current: cfg.my.minimum, next: null }
+          { messages: 0, current: cfg.my.minimum, next: null }
+          { messages: 0, current: cfg.my.minimum, next: null }
+          { messages: 100, current: cfg.my.minimum, next: cfg.my.maximum } # fast up
+          { messages: 0, current: cfg.my.maximum, next: null } # no-op for 120 seconds, 4 iterations
+          { messages: 0, current: cfg.my.maximum, next: null }
+          { messages: 0, current: cfg.my.maximum, next: null }
+          { messages: 0, current: cfg.my.maximum, next: null }
+          { messages: 0, current: cfg.my.maximum, next: cfg.my.minimum } # down
         ]
         series = series.map (s, idx) ->
           s.name = "iteration #{idx} of #{series.length}"
@@ -100,9 +102,10 @@ describe 'Governor', ->
 
           setTimeout () ->
             # prep this iteration
+            mocks.Heroku.setCurrentWorkers 'guv-test', { web: data.current }
             mocks.RabbitMQ.setQueues { 'myrole.IN': { 'messages': data.messages }}
-            if data.workers?
-              setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'web': data.workers }
+            if data.next?
+              setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'web': data.next }
             else
               setWorkers = null
 
@@ -149,6 +152,7 @@ describe 'Governor', ->
         cfg = guv.config.parse c
         gov = new guv.governor.Governor cfg
         mocks.RabbitMQ.setQueues { 'myrole.IN': { 'messages': 334 } }
+        mocks.Heroku.setCurrentWorkers 'guv-test', { correctworker: 99 }
         setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'correctworker': cfg.correctqueue.maximum }
 
         gov.once 'error', (err) ->
