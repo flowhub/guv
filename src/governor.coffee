@@ -63,6 +63,27 @@ realizeState = (cfg, state, callback) ->
     return callback err, state if err
     return callback null, state
 
+# polyfill for Object.values...
+objectValues = (obj) ->
+  vals = []
+  for key, val of obj
+    vals.push val
+  return vals
+
+historyStateValid = (s) ->
+  return s.error or (s.estimated_workers? and s.current_workers?)
+historyEntryValid = (r) ->
+  return objectValues(r).every historyStateValid
+historyValid = (h) ->
+  checks =
+    isArray: Array.isArray h
+    entries: if h.length then h.every (e) -> historyEntryValid e else true
+  return objectValues(checks).every (p) -> p == true
+
+# Throws Error if not valid
+exports.validateHistory = validateHistory = (h) ->
+  throw new Error "Invalid history object: #{JSON.stringify(h)}" if not historyValid h
+
 class Governor extends EventEmitter
   constructor: (c) ->
     @config = c
@@ -75,7 +96,7 @@ class Governor extends EventEmitter
   start: () ->
     runFunc = () =>
       @runOnce (err, state) =>
-
+        # error and state are emitted,
 
     interval = setInterval runFunc, @pollinterval
     runFunc() # do first iteration right now
@@ -83,11 +104,16 @@ class Governor extends EventEmitter
   stop: () ->
     clearInterval @interval if @interval
 
-  nextState: (err, queues, details) ->
-    state = nextState @config, @history, queues, details
-    @history.push state
+  updateHistory: (history) ->
+    validateHistory history
+    @history = history
     @history = @history.slice Math.max(@history.length-@historysize, 0)
     debug 'history length', @history.length
+
+  nextState: (err, queues, details) ->
+    state = nextState @config, @history, queues, details
+    history = @history.concat [ state ]
+    @updateHistory history
     return state
 
   runOnceInternal: (callback) ->
