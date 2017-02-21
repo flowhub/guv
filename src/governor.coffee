@@ -76,7 +76,7 @@ objectValues = (obj) ->
   return vals
 
 historyStateValid = (s) ->
-  return s.error or (s.estimated_workers? and s.current_workers?)
+  return s.error or s.estimated_workers?
 historyEntryValid = (r) ->
   return objectValues(r).every historyStateValid
 historyValid = (h) ->
