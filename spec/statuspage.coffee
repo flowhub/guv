@@ -27,7 +27,8 @@ describe 'Statuspage.io metrics', ->
       process.env['STATUSPAGE_API_TOKEN'] = 'statuspage-api-token-444'
       governor = new guv.governor.Governor cfg
       guv.statuspage.register governor, cfg
-      chai.expect(cfg['*'].broker).to.include 'amqp://'
+      chai.expect(cfg['*'].broker, 'broker url').to.exist
+      chai.expect(cfg['*'].broker, 'broker url').to.include 'amqp://'
       done()
 
     afterEach (done) ->
@@ -38,6 +39,7 @@ describe 'Statuspage.io metrics', ->
     describe 'when state changes', ->
       it 'should report pending jobs', (done) ->
         mocks.RabbitMQ.setQueues { 'myrole.IN': { 'messages': 1000 } }
+        mocks.Heroku.setCurrentWorkers 'guv-test', { 'web': 0 }
         postMetrics = mocks.StatusPageIO.expectMetric cfg['*'].statuspage, cfg.my.metric, 1000
         setWorkers = mocks.Heroku.expectWorkers 'guv-test', { 'web': cfg.my.maximum }
 
@@ -49,7 +51,6 @@ describe 'Statuspage.io metrics', ->
             postMetrics.done()
             setWorkers.done()
             done()
-          , 0
+          , 500
         governor.start()
-
 

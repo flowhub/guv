@@ -34,6 +34,30 @@ exports.Heroku =
     debug 'registered Heroku', payload
     return scope
 
+  setCurrentWorkers: (app, workers) ->
+    return new NoMock if not exports.enable
+
+    formation = []
+    for name, qty of workers
+      f =
+        type: name
+        quantity: qty
+        app:
+          name: app
+          id: 'app-uuid'
+        id: 'process-uuid'
+        size: 'Free'
+        created_at: '2015-06-23T07:00:27Z'
+        updated_at: '2017-02-21T18:56:58Z'
+        command: 'node ....'
+      formation.push f
+
+    scope = require('nock')('https://api.heroku.com')
+      .get("/apps/#{app}/formation")
+      .reply(200, formation)
+    debug 'registered Heroku.setCurrentWorkers', workers
+    return scope
+
 exports.RabbitMQ =
   setQueues: (overrides={}) ->
     return new NoMock if not exports.enable

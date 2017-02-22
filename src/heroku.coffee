@@ -10,6 +10,42 @@ statistics = require 'simple-statistics'
 
 exports.dryrun = false
 
+exports.getWorkers = (config, callback) ->
+  mainConfig = config['*']
+  return callback new Error "Missing global configuration (*)" if not mainConfig
+
+  options =
+    token: mainConfig.apikey or process.env['HEROKU_API_KEY']
+  heroku = new Heroku options
+
+  getFormation = (appname, cb) ->
+    heroku.apps(appname)
+      .formation()
+      .list cb
+
+  appnames = []
+  for name, role of config
+    continue if name == '*'
+    app = role.app
+    exists = app in appnames
+    appnames.push app if not exists
+
+  async.map appnames, getFormation, (err, response) ->
+    debug 'getworkers returned', err, response
+    return callback err if err
+
+    workers = []
+    for res in response
+      for dyno in res
+        # expose all the data
+        w = dyno
+        # but rename to our expectations
+        w.app = dyno.app.name
+        w.role = dyno.type
+        delete w.type
+        workers.push w
+    return callback null, workers
+
 exports.setWorkers = (config, workers, callback) ->
   options =
     token: config.apikey or process.env['HEROKU_API_KEY']

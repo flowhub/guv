@@ -4,6 +4,7 @@
 
 debug = require('debug')('guv:governor')
 { EventEmitter } = require 'events'
+bluebird = require 'bluebird'
 
 heroku = require './heroku'
 rabbitmq = require './rabbitmq'
@@ -16,7 +17,11 @@ extractHistory = (history, rolename, key) ->
     predictions.push state[rolename][key]
   return predictions
 
-nextState = (cfg, window, queues, queueDetails) ->
+nextState = (cfg, window, queues, queueDetails, currentWorkers) ->
+
+  workersObject = {}
+  for w in currentWorkers
+    workersObject[w.role] = w
 
   state = {}
   # TODO: store timestamps?
@@ -36,8 +41,8 @@ nextState = (cfg, window, queues, queueDetails) ->
       s.error = new Error "Could not get data for queue: #{role.queue}"
     else
       history = extractHistory window, name, 'estimated_workers'
-      currentWorkers = extractHistory(window, name, 'current_workers')[history.length-1]
-      s.previous_workers = currentWorkers
+      currentWorkers =  # Heroku
+      s.previous_workers = workersObject[role.worker].quantity
       workers = scale.scaleWithHistory role, name, history, currentWorkers, s.current_jobs
       s.estimated_workers = workers.estimate
       if workers.next?
@@ -71,7 +76,7 @@ objectValues = (obj) ->
   return vals
 
 historyStateValid = (s) ->
-  return s.error or (s.estimated_workers? and s.current_workers?)
+  return s.error or s.estimated_workers?
 historyEntryValid = (r) ->
   return objectValues(r).every historyStateValid
 historyValid = (h) ->
@@ -110,19 +115,31 @@ class Governor extends EventEmitter
     @history = @history.slice Math.max(@history.length-@historysize, 0)
     debug 'history length', @history.length
 
-  nextState: (err, queues, details) ->
-    state = nextState @config, @history, queues, details
+  nextState: (queues, details, workers) ->
+    state = nextState @config, @history, queues, details, workers
     history = @history.concat [ state ]
     @updateHistory history
     return state
 
   runOnceInternal: (callback) ->
-    try
-      rabbitmq.getStats @config['*'], (err, queues, details) =>
-        state = @nextState err, queues, details
-        realizeState @config, state, callback
-    catch e
-      return callback e
+    getQueues = (mainConfig) ->
+      bluebird.promisify(rabbitmq.getStats, multiArgs: true)(mainConfig)
+      .then (results) ->
+        r =
+          queues: results[0]
+          details: results[1]
+        return Promise.resolve r
+
+    getWorkers = bluebird.promisify heroku.getWorkers
+
+    bluebird.props(
+      rabbitmq: getQueues @config['*']
+      workers: getWorkers @config
+    ).then (current) =>
+      state = @nextState current.rabbitmq.queues, current.rabbitmq.details, current.workers
+      return bluebird.promisify(realizeState)(@config, state)
+    .asCallback callback
+    return null
 
   runOnce: (callback) ->
     @runOnceInternal (err, state) =>
