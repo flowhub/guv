@@ -20,12 +20,13 @@ getTimeIntervals = (start, end, intervalMinutes) ->
       end: new Date(e)
   return intervals
 
-getScaleEventsChunk = (insights, start, end, callback) ->
+getScaleEventsChunk = (insights, start, end, app, callback) ->
   start = start.toISOString()
   end = end.toISOString()
 
   limit = 999
   query = "SELECT jobs,workers,drainrate,fillrate,consumers,role,app,timestamp from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
+  query += "WHERE app = '#{app}'" if app
   insights.query query, (err, body) ->
     return callback err if err
     return callback new Error "#{body.error}" if body.error
@@ -45,14 +46,13 @@ getScaleEvents = (options, callback) ->
 
   # build subqueries
   queries = []
-  end = new Date() # TODO: make configurable?
-  start = new Date(end)
-  start.setTime(start.getTime()-options.period*24*60*60*1000)
+  end = options.end
+  start = new Date (end.getTime()-options.period*24*60*60*1000)
   queries = getTimeIntervals start, end, options.queryInterval
 
   # execute queries
   getChunk = (period, cb) ->
-    return getScaleEventsChunk insights, period.start, period.end, cb
+    return getScaleEventsChunk insights, period.start, period.end, options.app, cb
 
   debug "Executing #{queries.length} over #{options.period} days"
   throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
@@ -75,15 +75,19 @@ parse = (args) ->
   program
     .option('--query-key <hostname>', 'Query Key to access New Relic Insights API', String, '')
     .option('--account-id <port>', 'Account ID used to access New Relic Insights API', String, '')
-    #.option('--app <app>', 'App name in New Relic. Can be specified multiple times', addApp, [])
+    .option('--app <app>', 'App name in New Relic to query for.', String, '')
     .option('--period <days>', 'Number of days to get data for', Number, 7)
+    .option('--end <DATETIME>', 'End time of queried period.', String, 'now')
     .option('--query-interval <minutes>', 'How big chucks to request at a time', Number, 30)
     .parse(args)
 
 normalize = (options) ->
   options.accountId = process.env.NEW_RELIC_ACCOUNT_ID if not options.accountId
   options.queryKey = process.env.NEW_RELIC_QUERY_KEY if not options.queryKey
-  options.app = [ options.app ] if typeof options.app == 'string'
+  if options.end == 'now' or not options.end
+    options.end = new Date()
+  else
+    options.end = new Date options.end
   return options
 
 exports.main = main = () ->
