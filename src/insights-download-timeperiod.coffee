@@ -20,7 +20,7 @@ haveData = (file, callback) ->
     fs.stat file, (err, stat) ->
       return callback err if err
       hasData = stat.size > 1
-      return callback null, hasData 
+      return callback null, hasData
 
 dateOnlyString = (date) ->
   return date.toISOString().split('T')[0]
@@ -86,4 +86,4 @@ main = () ->
       console.log failures
     process.exit exitCode
 
-main() if not module.parent 
+main() if not module.parent
