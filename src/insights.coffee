@@ -24,7 +24,7 @@ getScaleEventsChunk = (insights, start, end, callback) ->
   end = end.toISOString()
 
   limit = 999
-  query = "SELECT role,jobs,workers,app from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
+  query = "SELECT jobs,workers,drainrate,fillrate,consumers,role,app,timestamp from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
   insights.query query, (err, body) ->
     return callback err if err
 
