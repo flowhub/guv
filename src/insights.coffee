@@ -28,6 +28,7 @@ getScaleEventsChunk = (insights, start, end, callback) ->
   query = "SELECT jobs,workers,drainrate,fillrate,consumers,role,app,timestamp from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
   insights.query query, (err, body) ->
     return callback err if err
+    return callback new Error "#{body.error}" if body.error
 
     return callback new Error 'Number of events for interval hit max limit' if body.performanceStats.matchCount >= limit
     results = body.results[0].events
