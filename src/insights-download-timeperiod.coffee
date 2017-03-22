@@ -42,7 +42,7 @@ executeDay = (day, args, callback) ->
       console.log '$', cmd
       exec cmd, options, (err, stdout, stderr) ->
         status = if err then "FAILED, #{stderr}" else 'SUCCESS'
-        console.log '!', status
+        console.log '!', file, status
         return callback null, { file: file, error: err, stdout: stdout, stderr: stderr, status: status }
 
 # returns array of an object describing. If has .error, then was a failure
