@@ -32,7 +32,7 @@ getScaleEventsChunk = (insights, start, end, callback) ->
 
     return callback new Error 'Number of events for interval hit max limit' if body.performanceStats.matchCount >= limit
     results = body.results[0].events
-    return callback new Error 'No results returned' if not results
+    return callback new Error 'No results returned' if not results? # empty array is fine though
 
     return callback null, results
 
@@ -56,7 +56,7 @@ getScaleEvents = (options, callback) ->
 
   debug "Executing #{queries.length} over #{options.period} days"
   throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
-  async.mapLimit queries, 20, getChunk, (err, chunks) ->
+  async.mapLimit queries, 10, getChunk, (err, chunks) ->
     return callback err if err
 
     # flatten list
