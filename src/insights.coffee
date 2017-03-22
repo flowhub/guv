@@ -20,12 +20,12 @@ getTimeIntervals = (start, end, intervalMinutes) ->
       end: new Date(e)
   return intervals
 
-getScaleEventsChunk = (insights, start, end, app, callback) ->
+getScaleEventsChunk = (insights, start, end, app, fields, event, callback) ->
   start = start.toISOString()
   end = end.toISOString()
 
   limit = 999
-  query = "SELECT jobs,workers,drainrate,fillrate,consumers,role,app,timestamp from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
+  query = "SELECT #{fields} FROM #{event} SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
   query += "WHERE app = '#{app}'" if app
   insights.query query, (err, body) ->
     return callback err if err
@@ -52,7 +52,7 @@ getScaleEvents = (options, callback) ->
 
   # execute queries
   getChunk = (period, cb) ->
-    return getScaleEventsChunk insights, period.start, period.end, options.app, cb
+    return getScaleEventsChunk insights, period.start, period.end, options.app, options.fields, options.event, cb
 
   debug "Executing #{queries.length} over #{options.period} days"
   throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
@@ -77,6 +77,8 @@ parse = (args) ->
     .option('--account-id <port>', 'Account ID used to access New Relic Insights API', String, '')
     .option('--app <app>', 'App name in New Relic to query for.', String, '')
     .option('--period <days>', 'Number of days to get data for', Number, 7)
+    .option('--fields <one,two>', 'Fields to collect. Comma separated.', String, '*')
+    .option('--event <EventName>', 'Event to query for', String, 'GuvScaled')
     .option('--end <DATETIME>', 'End time of queried period.', String, 'now')
     .option('--query-interval <minutes>', 'How big chucks to request at a time', Number, 30)
     .parse(args)
