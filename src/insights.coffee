@@ -25,8 +25,11 @@ getScaleEventsChunk = (insights, start, end, app, fields, event, callback) ->
   end = end.toISOString()
 
   limit = 999
-  query = "SELECT #{fields} FROM #{event} SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
-  query += "WHERE app = '#{app}'" if app
+  query = "SELECT #{fields} FROM #{event}"
+  query += " WHERE appName = '#{app}'" if app
+  query += " SINCE '#{start}' UNTIL '#{end}'"
+  query += " LIMIT #{limit}"
+  debug 'query', query
   insights.query query, (err, body) ->
     return callback err if err
     return callback new Error "#{body.error}" if body.error
