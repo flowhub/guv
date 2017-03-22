@@ -49,7 +49,7 @@ executeDay = (day, args, callback) ->
 executeOverDays = (args, callback) ->
   days = daysInPeriod args.start, args.end
 
-  async.mapLimit days, 5, (d, cb) ->
+  async.mapLimit days, args.concurrency, (d, cb) ->
     executeDay d, args, cb
   , callback
 
@@ -61,6 +61,7 @@ parse = (args) ->
     .option('--command <COMMAND>', 'Command to execute for each day.', String, '')
     .option('--start <DATE>', 'Start time of period to run', String, '')
     .option('--end <DATE>', 'End time of period to run', String, 'now')
+    .option('--concurrency <N>', 'Number of concurrent commands/subprocesses', Number, 5)
     .parse(args)
 
 normalize = (args) ->

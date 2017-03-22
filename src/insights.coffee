@@ -56,7 +56,7 @@ getScaleEvents = (options, callback) ->
 
   debug "Executing #{queries.length} over #{options.period} days"
   throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
-  async.mapLimit queries, 10, getChunk, (err, chunks) ->
+  async.mapLimit queries, options.concurrency, getChunk, (err, chunks) ->
     return callback err if err
 
     # flatten list
@@ -81,6 +81,7 @@ parse = (args) ->
     .option('--event <EventName>', 'Event to query for', String, 'GuvScaled')
     .option('--end <DATETIME>', 'End time of queried period.', String, 'now')
     .option('--query-interval <minutes>', 'How big chucks to request at a time', Number, 30)
+    .option('--concurrency <N>', 'Number of concurrent commands/subprocesses', Number, 5)
     .parse(args)
 
 normalize = (options) ->
