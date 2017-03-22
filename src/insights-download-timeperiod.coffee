@@ -49,7 +49,7 @@ executeDay = (day, args, callback) ->
 executeOverDays = (args, callback) ->
   days = daysInPeriod args.start, args.end
 
-  async.mapSeries days, (d, cb) ->
+  async.mapLimit days, 5, (d, cb) ->
     executeDay d, args, cb
   , callback
 
