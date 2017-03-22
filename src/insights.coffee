@@ -1,6 +1,7 @@
 
 Insights = require 'node-insights'
 async = require 'async'
+debug = require('debug')('guv:insights')
 
 getTimeIntervals = (start, end, intervalMinutes) ->
   # use milliseconds Unix epoch time for calculations
@@ -51,7 +52,10 @@ getScaleEvents = (options, callback) ->
   # execute queries
   getChunk = (period, cb) ->
     return getScaleEventsChunk insights, period.start, period.end, cb
-  async.map queries, getChunk, (err, chunks) ->
+
+  debug "Executing #{queries.length} over #{options.period} days"
+  throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
+  async.mapLimit queries, 20, getChunk, (err, chunks) ->
     return callback err if err
 
     # flatten list
@@ -72,7 +76,7 @@ parse = (args) ->
     .option('--account-id <port>', 'Account ID used to access New Relic Insights API', String, '')
     #.option('--app <app>', 'App name in New Relic. Can be specified multiple times', addApp, [])
     .option('--period <days>', 'Number of days to get data for', Number, 7)
-    .option('--query-interval <minutes>', ' ', Number, 30)
+    .option('--query-interval <minutes>', 'How big chucks to request at a time', Number, 30)
     .parse(args)
 
 normalize = (options) ->
