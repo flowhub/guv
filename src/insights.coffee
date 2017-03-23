@@ -34,7 +34,8 @@ getScaleEventsChunk = (insights, start, end, app, fields, event, callback) ->
     return callback err if err
     return callback new Error "#{body.error}" if body.error
 
-    return callback new Error 'Number of events for interval hit max limit' if body.performanceStats.matchCount >= limit
+    matches = body.performanceStats.matchCount
+    return callback new Error "Number of events for interval was above max limit #{matches}" if matches >= limit
     results = body.results[0].events
     return callback new Error 'No results returned' if not results? # empty array is fine though
 
