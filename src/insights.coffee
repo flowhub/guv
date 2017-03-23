@@ -20,18 +20,23 @@ getTimeIntervals = (start, end, intervalMinutes) ->
       end: new Date(e)
   return intervals
 
-getScaleEventsChunk = (insights, start, end, app, callback) ->
+getScaleEventsChunk = (insights, start, end, app, fields, event, andWhere, callback) ->
   start = start.toISOString()
   end = end.toISOString()
 
   limit = 999
-  query = "SELECT jobs,workers,drainrate,fillrate,consumers,role,app,timestamp from GuvScaled SINCE '#{start}' UNTIL '#{end}' LIMIT #{limit}"
-  query += "WHERE app = '#{app}'" if app
+  query = "SELECT #{fields} FROM #{event}"
+  query += " WHERE appName = '#{app}'" if app
+  query += " WHERE #{andWhere}" if andWhere
+  query += " SINCE '#{start}' UNTIL '#{end}'"
+  query += " LIMIT #{limit}"
+  debug 'query', query
   insights.query query, (err, body) ->
     return callback err if err
     return callback new Error "#{body.error}" if body.error
 
-    return callback new Error 'Number of events for interval hit max limit' if body.performanceStats.matchCount >= limit
+    matches = body.performanceStats.matchCount
+    return callback new Error "Number of events for interval was above max limit #{matches}" if matches >= limit
     results = body.results[0].events
     return callback new Error 'No results returned' if not results? # empty array is fine though
 
@@ -52,11 +57,11 @@ getScaleEvents = (options, callback) ->
 
   # execute queries
   getChunk = (period, cb) ->
-    return getScaleEventsChunk insights, period.start, period.end, options.app, cb
+    return getScaleEventsChunk insights, period.start, period.end, options.app, options.fields, options.event, options.where, cb
 
   debug "Executing #{queries.length} over #{options.period} days"
   throw new Error "Extremely high number of queries needed, over 3k: #{queries.length}" if queries.length > 3000
-  async.mapLimit queries, 10, getChunk, (err, chunks) ->
+  async.mapLimit queries, options.concurrency, getChunk, (err, chunks) ->
     return callback err if err
 
     # flatten list
@@ -77,8 +82,12 @@ parse = (args) ->
     .option('--account-id <port>', 'Account ID used to access New Relic Insights API', String, '')
     .option('--app <app>', 'App name in New Relic to query for.', String, '')
     .option('--period <days>', 'Number of days to get data for', Number, 7)
+    .option('--fields <one,two>', 'Fields to collect. Comma separated.', String, '*')
+    .option('--event <EventName>', 'Event to query for', String, 'GuvScaled')
     .option('--end <DATETIME>', 'End time of queried period.', String, 'now')
     .option('--query-interval <minutes>', 'How big chucks to request at a time', Number, 30)
+    .option('--concurrency <N>', 'Number of concurrent commands/subprocesses', Number, 5)
+    .option('--where <CLAUSE>', 'Extra where clause to further limit', String, '')
     .parse(args)
 
 normalize = (options) ->

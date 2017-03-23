@@ -42,14 +42,14 @@ executeDay = (day, args, callback) ->
       console.log '$', cmd
       exec cmd, options, (err, stdout, stderr) ->
         status = if err then "FAILED, #{stderr}" else 'SUCCESS'
-        console.log '!', status
+        console.log '!', file, status
         return callback null, { file: file, error: err, stdout: stdout, stderr: stderr, status: status }
 
 # returns array of an object describing. If has .error, then was a failure
 executeOverDays = (args, callback) ->
   days = daysInPeriod args.start, args.end
 
-  async.mapLimit days, 5, (d, cb) ->
+  async.mapLimit days, args.concurrency, (d, cb) ->
     executeDay d, args, cb
   , callback
 
@@ -61,6 +61,7 @@ parse = (args) ->
     .option('--command <COMMAND>', 'Command to execute for each day.', String, '')
     .option('--start <DATE>', 'Start time of period to run', String, '')
     .option('--end <DATE>', 'End time of period to run', String, 'now')
+    .option('--concurrency <N>', 'Number of concurrent commands/subprocesses', Number, 5)
     .parse(args)
 
 normalize = (args) ->
