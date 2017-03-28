@@ -265,6 +265,9 @@ https://addons.heroku.com/adept-scale
 - Heroku Vector. Ruby,Linear scaling.
 https://github.com/wpeterson/heroku-vector
 
+- pedro/delayed_job. Fork of Delayed::Job Ruby gem with autoscaling support. Only supports on/off with 0/1 workers.
+https://github.com/pedro/delayed_job/tree/autoscaling#autoscaling-with-heroku
+
 ## References
 
 - https://devcenter.heroku.com/articles/scheduled-jobs-custom-clock-processes
