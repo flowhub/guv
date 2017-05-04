@@ -1,6 +1,8 @@
 guv
 ===
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/flowhub/guv.svg)](https://greenkeeper.io/)
+
 `guv`, aka Grid Utilization Vigilante, is a governor for your (Heroku) workers:
 It automatically scales the numbers of workers based on number of pending jobs in a (RabbitMQ) queue.
 
