@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "amqp-stats": "~0.0.14",
-    "async": "~2.1.4",
+    "async": "~2.4.1",
     "bluebird": "^3.4.7",
     "coffee-script": "~1.12.2",
     "commander": "~2.9.0",
