@@ -33,7 +33,7 @@
     "tv4": "^1.2.7"
   },
   "devDependencies": {
-    "chai": "^3.3.0",
+    "chai": "^4.0.1",
     "coffeeify": "^2.0.1",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
