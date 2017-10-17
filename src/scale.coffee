@@ -10,7 +10,9 @@ common = require './common'
 proportional = (config, queueLength) ->
   # up to N concurrent jobs process in time P, but once N>C time becomes 2P, and so on
   waitingTime = Math.ceil(queueLength/config.concurrency)*config.processing
-  availableTime = config.target - config.processing
+  # availableTime should not get < config.processing, as we can never process a
+  # job faster than the mean processing time (on average).
+  availableTime = Math.max(config.processing, config.target - config.processing)
   return waitingTime/availableTime
 
 min = (a, b) -> if a < b then a else b
