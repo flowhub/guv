@@ -82,3 +82,22 @@
     extrarole: { deadline: 330.33, extrakey: 25 }
   valid: true
   validationOptions: '--allow-key extrakey'
+-
+  name: 'differing role vs worker'
+  input: |
+    '*':
+      boot: 20
+      app: imgflo
+      min: 2
+      max: 10
+    processing: { d: 6.0, p: 1.0, queue: 'imgflo_worker.IN', worker: 'my-process-name' }
+  config:
+   "*":
+    app: imgflo
+    boot: 20.0
+   processing:
+    deadline: 6.0
+    processing: 1.0
+    worker: 'my-process-name'
+    queue: imgflo_worker.IN
+  valid: true

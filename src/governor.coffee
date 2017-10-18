@@ -17,11 +17,20 @@ extractHistory = (history, rolename, key) ->
     predictions.push state[rolename][key]
   return predictions
 
+locateConfigEntry = (cfg, appName, processName) ->
+  for name, value of cfg
+    return name if (appName == value.app && processName == (value.worker || name))
+
 nextState = (cfg, window, queues, queueDetails, currentWorkers) ->
 
   workersObject = {}
+
   for w in currentWorkers
-    workersObject[w.role] = w
+    # Here w.role is the heroku process name. We need to map
+    # based on app, process name to the key in the config (as they are
+    # not necessarily one and the same.)
+    configKey = locateConfigEntry(cfg, w.app, w.role)
+    workersObject[configKey] = w
 
   state = {}
   # TODO: store timestamps?
@@ -42,7 +51,7 @@ nextState = (cfg, window, queues, queueDetails, currentWorkers) ->
     else
       history = extractHistory window, name, 'estimated_workers'
       currentWorkers =  # Heroku
-      s.previous_workers = workersObject[role.worker].quantity
+      s.previous_workers = workersObject[name].quantity
       workers = scale.scaleWithHistory role, name, history, currentWorkers, s.current_jobs
       s.estimated_workers = workers.estimate
       if workers.next?
