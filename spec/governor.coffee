@@ -128,6 +128,52 @@ describe 'Governor', ->
         async.mapSeries series, iteration, (err) ->
           return done err
 
+  # Complicated config
+  describe 'complicated config', ->
+    c = \
+    """
+    '*': { app: 'guv-test' }
+    my: { queue: 'myrole.IN', worker: web, minimum: 0, max: 1 }
+    ours: { queue: 'ours.IN', worker: web, minimum: 1, max: 1, app: 'other' }
+    """
+    cfg = guv.config.parse c
+    beforeEach (done) ->
+      governor = new guv.governor.Governor cfg
+      done()
+
+    beforeEach (done) ->
+      governor.stop()
+      done()
+
+    describe 'no messages in queue', ->
+      it 'should scale to minimum', (done) ->
+        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 1 }
+        mocks.Heroku.setCurrentWorkers 'other', { web: 2 }
+        mocks.RabbitMQ.setQueues
+          'myrole.IN':
+            'messages': 0
+          'ours.IN':
+            'messages': 0
+        setWorkers1 = mocks.Heroku.expectWorkers 'guv-test',
+          'web': cfg.my.minimum
+
+        setWorkers2 = mocks.Heroku.expectWorkers 'other',
+          'web': cfg.ours.minimum
+
+        governor.once 'error', (err) ->
+          chai.expect(err).to.not.exist
+
+        governor.once 'state', (state) ->
+          chai.expect(state).to.include.keys 'my'
+          chai.expect(state).to.include.keys 'ours'
+          chai.expect(state.my.current_jobs).to.equal 0
+          chai.expect(state.my.new_workers).to.equal cfg.my.minimum
+          chai.expect(state.ours.new_workers).to.equal cfg.ours.minimum
+          setWorkers1.done()
+          setWorkers2.done()
+          done()
+        governor.start()
+
   # Error cases
   describe 'Errors', ->
 
