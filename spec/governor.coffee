@@ -23,7 +23,7 @@ describe 'Governor', ->
   describe 'is happy', ->
     c = \
     """
-    '*': { app: 'guv-test'}
+    '*': { app: 'guv-test' }
     my: {queue: 'myrole.IN', worker: web, minimum: 0, max: 1}
     """
     cfg = guv.config.parse c
@@ -143,20 +143,20 @@ describe 'Governor', ->
       governor.stop()
       done()
 
-    describe 'no messages in queue', ->
-      it 'should scale to minimum', (done) ->
-        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 1 }
-        mocks.Heroku.setCurrentWorkers 'other', { web: 2 }
+    describe 'scales correctly', ->
+      it 'should scale both correctly', (done) ->
+        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 0 }
+        mocks.Heroku.setCurrentWorkers 'other', { web: 0 }
         mocks.RabbitMQ.setQueues
           'myrole.IN':
             'messages': 0
           'ours.IN':
-            'messages': 0
+            'messages': 100
         setWorkers1 = mocks.Heroku.expectWorkers 'guv-test',
           'web': cfg.my.minimum
 
         setWorkers2 = mocks.Heroku.expectWorkers 'other',
-          'web': cfg.ours.minimum
+          'web': cfg.ours.maximum
 
         governor.once 'error', (err) ->
           chai.expect(err).to.not.exist
@@ -166,7 +166,7 @@ describe 'Governor', ->
           chai.expect(state).to.include.keys 'ours'
           chai.expect(state.my.current_jobs).to.equal 0
           chai.expect(state.my.new_workers).to.equal cfg.my.minimum
-          chai.expect(state.ours.new_workers).to.equal cfg.ours.minimum
+          chai.expect(state.ours.new_workers).to.equal cfg.ours.maximum
           setWorkers1.done()
           setWorkers2.done()
           done()
