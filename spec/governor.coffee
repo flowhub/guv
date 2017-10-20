@@ -10,10 +10,12 @@ describe 'Governor', ->
   governor = null
   
   before () ->
-    # must be set before running tests
     cfg = guv.config.parse ""
-    chai.expect(cfg['*'].broker).to.include 'amqp://'
-    chai.expect(process.env['HEROKU_API_KEY'], 'HEROKU_API_KEY envvar not set').to.exist
+    broker = cfg['*'].broker
+    # check that required envvars for the tests
+    chai.expect(broker, 'GUV_BROKER envvar not set').to.exist()
+    chai.expect(broker).to.include 'amqp://'
+    chai.expect(process.env['HEROKU_API_KEY'], 'HEROKU_API_KEY envvar not set').to.exist()
     mocks.startRecord()
 
   after () ->

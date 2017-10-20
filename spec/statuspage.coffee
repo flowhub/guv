@@ -27,7 +27,7 @@ describe 'Statuspage.io metrics', ->
       process.env['STATUSPAGE_API_TOKEN'] = 'statuspage-api-token-444'
       governor = new guv.governor.Governor cfg
       guv.statuspage.register governor, cfg
-      chai.expect(cfg['*'].broker, 'broker url').to.exist
+      chai.expect(cfg['*'].broker, 'GUV_BROKER envvar not set').to.exist
       chai.expect(cfg['*'].broker, 'broker url').to.include 'amqp://'
       done()
 
