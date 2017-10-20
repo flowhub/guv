@@ -134,7 +134,7 @@ describe 'Governor', ->
     """
     '*': { app: 'guv-test' }
     my: { queue: 'myrole.IN', worker: web, minimum: 0, max: 1 }
-    ours: { queue: 'ours.IN', worker: web, minimum: 1, max: 1, app: 'other' }
+    ours: { queue: 'myrole.DRAIN', worker: web, minimum: 1, max: 1, app: 'other' }
     """
     cfg = guv.config.parse c
     beforeEach (done) ->
@@ -147,12 +147,12 @@ describe 'Governor', ->
 
     describe 'scales correctly', ->
       it 'should scale both correctly', (done) ->
-        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 0 }
+        mocks.Heroku.setCurrentWorkers 'guv-test', { web: 1 }
         mocks.Heroku.setCurrentWorkers 'other', { web: 0 }
         mocks.RabbitMQ.setQueues
           'myrole.IN':
             'messages': 0
-          'ours.IN':
+          'myrole.DRAIN':
             'messages': 100
         setWorkers1 = mocks.Heroku.expectWorkers 'guv-test',
           'web': cfg.my.minimum
