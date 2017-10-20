@@ -1,3 +1,19 @@
+# guv master
+
+Released: N/A
+
+Bugfixes
+
+* Fixed wrong scaling when two different apps have the same dyno name. Contributed by @timlesallen 
+
+# guv 0.2.0
+
+Released: February 21, 2017
+
+* Now fetches current number of workers from Heroku API before doing scaling calculation
+This doubles the number of Heroku API requests made per app.
+Normally not a problem, but since Heroku API quotas are per account, accounts which manage many apps may now go over quota.
+In this case use two or more Heroku accounts.
 
 # guv 0.1.11
 
