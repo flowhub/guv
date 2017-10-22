@@ -1,10 +1,11 @@
-# guv master
+# guv 0.3.0
 
-Released: N/A
+Released: October 22, 2017
 
 Bugfixes
 
 * Fixed wrong scaling when two different apps have the same dyno name. Contributed by @timlesallen 
+* Fixed over-agressive scaling decisions with very tight deadlines (issue #64). Contributed by @timlesallen
 
 # guv 0.2.0
 
