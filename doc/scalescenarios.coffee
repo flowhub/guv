@@ -1,5 +1,5 @@
 
-guv = require './'
+guv = require '../'
 
 ## Take a JSON with list of scenarios and output the state after scaling 
 # Each scenario has: config,role,history,workers,messages
