@@ -28,6 +28,7 @@ validityTest = (test) ->
     stderr = null
     stdout = null
     before (done) ->
+      @timeout 4*1000
       extra = test.validationOptions or ""
       guv_validate test.input, extra, (e, stdo, stde) ->
         err = e

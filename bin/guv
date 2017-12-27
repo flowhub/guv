@@ -1,4 +1,3 @@
 #!/bin/env node
-require('coffee-script/register');
 guv = require('../');
 guv.main.main();
