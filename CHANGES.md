@@ -1,3 +1,11 @@
+# guv 0.3.1
+
+Released: December 27, 2017
+
+Bugfixes
+
+* Fixed CoffeeScript registration when importing API from plain JavaScript
+
 # guv 0.3.0
 
 Released: October 22, 2017
