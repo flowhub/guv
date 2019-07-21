@@ -17,7 +17,7 @@
     "bluebird": "^3.4.7",
     "coffee-script": "~1.12.2",
     "commander": "~2.9.0",
-    "debug": "~2.6.0",
+    "debug": "~2.6.5",
     "gaussian": "~1.1.0",
     "heroku-client": "~2.4.3",
     "js-yaml": "~3.7.0",
